@@ -1,34 +1,76 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
-		}
-	],
+    {
+      "path" : "pages/home/home",
+      "style" :                                                                                    
+      {
+          "navigationBarTitleText": "首页",
+          "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/personal/personal",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "个人中心",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/message/message",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "消息",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/rank/rank",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "排行榜",
+        "enablePullDownRefresh": false
+      }
+    }
+  ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarBackgroundColor": "#cddfe9",
 		"backgroundColor": "#F8F8F8"
 	},
   "tabBar": {
   	"color": "#7A7E83",
-  	"selectedColor": "#3cc51f",
+  	"selectedColor": "#32a4e0",
   	"borderStyle": "black",
   	"backgroundColor": "#ffffff",
   	"list": [{
-  		"pagePath": "pages/component/index",
-  		"iconPath": "static/image/icon_component.png",
-  		"selectedIconPath": "static/image/icon_component_HL.png",
-  		"text": "组件"
+  		"pagePath": "pages/home/home",
+  		"iconPath": "static/images/tabbar/home_black.png",
+  		"selectedIconPath": "static/images/tabbar/black_blue.png",
+  		"text": "首页"
   	}, {
-  		"pagePath": "pages/API/index",
-  		"iconPath": "static/image/icon_API.png",
-  		"selectedIconPath": "static/image/icon_API_HL.png",
-  		"text": "接口"
-  	}]
+  		"pagePath": "pages/message/message",
+  		"iconPath": "static/images/tabbar/msg_black.png",
+  		"selectedIconPath": "static/images/tabbar/msg_blue.png",
+  		"text": "消息"
+  	}, {
+  		"pagePath": "pages/rank/rank",
+  		"iconPath": "static/images/tabbar/rank_black.png",
+  		"selectedIconPath": "static/images/tabbar/rank_blue.png",
+  		"text": "排行"
+  	}, {
+  		"pagePath": "pages/personal/personal",
+  		"iconPath": "static/images/tabbar/personal_black.png",
+  		"selectedIconPath": "static/images/tabbar/personal_blue.png",
+  		"text": "个人"
+  	}],
+    "midButton": {
+      "width": "130rpx",
+      "height": "130rpx",
+      "backgroundImage": "static/images/tabbar/加号.png"
+      
+    }
   },
 	"uniIdRouter": {}
 }
