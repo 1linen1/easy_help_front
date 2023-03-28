@@ -1,7 +1,7 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
-      "path" : "pages/home/home",
+      "path" : "pages/tabbar/home/home",
       "style" :                                                                                    
       {
           "navigationBarTitleText": "首页",
@@ -9,7 +9,7 @@
       }
     },
     {
-      "path" : "pages/personal/personal",
+      "path" : "pages/tabbar/personal/personal",
       "style" :                                                                                    
       {
         "navigationBarTitleText": "个人中心",
@@ -17,7 +17,7 @@
       }
     },
     {
-      "path" : "pages/message/message",
+      "path" : "pages/tabbar/message/message",
       "style" :                                                                                    
       {
         "navigationBarTitleText": "消息",
@@ -25,11 +25,39 @@
       }
     },
     {
-      "path" : "pages/rank/rank",
+      "path" : "pages/tabbar/rank/rank",
       "style" :                                                                                    
       {
         "navigationBarTitleText": "排行榜",
         "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/post/post",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "发帖",
+        "enablePullDownRefresh": false,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "发布",
+                "fontSize": "11",
+                "float": "right",
+                "color": "#3d83a8",
+                "fontWeight": "bold"
+              },
+              {
+                "text": "&#xec46;",
+                "fontSrc": "./static/iconfont/iconfont.ttf",
+                "fontSize": "21",
+                "float": "right",
+                "color": "#3d83a8"
+              }
+            ]
+          }
+        }
       }
     }
   ],
@@ -37,7 +65,9 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#cddfe9",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+    "animationType": "fade-in",
+    "animationDuration": 3000
 	},
   "tabBar": {
   	"color": "#7A7E83",
@@ -45,22 +75,22 @@
   	"borderStyle": "black",
   	"backgroundColor": "#ffffff",
   	"list": [{
-  		"pagePath": "pages/home/home",
+  		"pagePath": "pages/tabbar/home/home",
   		"iconPath": "static/images/tabbar/home_black.png",
   		"selectedIconPath": "static/images/tabbar/black_blue.png",
   		"text": "首页"
   	}, {
-  		"pagePath": "pages/message/message",
+  		"pagePath": "pages/tabbar/message/message",
   		"iconPath": "static/images/tabbar/msg_black.png",
   		"selectedIconPath": "static/images/tabbar/msg_blue.png",
   		"text": "消息"
   	}, {
-  		"pagePath": "pages/rank/rank",
+  		"pagePath": "pages/tabbar/rank/rank",
   		"iconPath": "static/images/tabbar/rank_black.png",
   		"selectedIconPath": "static/images/tabbar/rank_blue.png",
   		"text": "排行"
   	}, {
-  		"pagePath": "pages/personal/personal",
+  		"pagePath": "pages/tabbar/personal/personal",
   		"iconPath": "static/images/tabbar/personal_black.png",
   		"selectedIconPath": "static/images/tabbar/personal_blue.png",
   		"text": "个人"
@@ -69,7 +99,6 @@
       "width": "130rpx",
       "height": "130rpx",
       "backgroundImage": "static/images/tabbar/加号.png"
-      
     }
   },
 	"uniIdRouter": {}
