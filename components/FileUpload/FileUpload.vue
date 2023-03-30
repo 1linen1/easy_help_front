@@ -6,6 +6,7 @@
     	file-mediatype="image"
     	mode="grid"
     	file-extname="png,jpg"
+      :auto-upload="false"
     	:limit="6"
     	@progress="progress" 
     	@success="success" 
@@ -17,6 +18,10 @@
 
 <script setup>
   import { ref } from "vue";
+  
+  // 声明它要触发的事件
+  const emit = defineEmits(['saveFileInfo'])
+  
   let imageStyles = ref({
     border: {
       color: "#eaa",
@@ -28,6 +33,8 @@
   let imageValue = ref([])
   function select(e) {
     console.log("选择文件:", e);
+    // 注意在defineEmits()时接收参数
+    emit('saveFileInfo', e)
   }
   function progress(e) {
     console.log("上传进度:", e);
