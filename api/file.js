@@ -1,11 +1,4 @@
-import { defineStore } from 'pinia';
-import { ref } from "vue";
-export const usePostStore = defineStore('postStore', () => {
-  
-  let content = ref('')
-  let imageValue = ref([])
-  
-  function saveFileInfo({tempFiles, tempFilePaths}) {
+export function fileUpload({tempFiles, tempFilePaths}, fileList) {
     console.log(tempFilePaths, tempFiles)
     uni.showLoading({
       title: "上传中...",
@@ -29,23 +22,16 @@ export const usePostStore = defineStore('postStore', () => {
           if (data.code === 200) {
             console.log("上传成功!");
             // 成功上传
-            setTimeout(() => {
-              imageValue.value.unshift({
-                name: item.name,
-                extname: item.extname,
-                url: item.path
-              })
-            }, 0)
-            console.log("this.imageValue =", this.imageValue)
+            fileList.push({
+              name: item.name,
+              extname: item.extname,
+              url: data.data
+            })
           } else {
             uni.showToast({
               title: "图片上传失败!",
               icon:'error'
             })
-            setTimeout(() => {
-              imageValue.value = imageValue.value
-            }, 0)
-            console.log("this.imageValue =", this.imageValue)
           }
         },
         fail: (err) => {
@@ -57,14 +43,10 @@ export const usePostStore = defineStore('postStore', () => {
         },
         complete() {
           uni.hideLoading()
+          console.log("此时fileList:", fileList)
         }
       })
     })
+    
+    return fileList
   }
-  
-  return {
-    content,
-    imageValue,
-    saveFileInfo
-  }
-});
