@@ -7,7 +7,7 @@
     <view class="imageUpload">
         <view>
           <uni-file-picker 
-          	v-model:value="fileList"  
+          	v-model="fileList"  
             :imageStyles="imageStyles"
           	file-mediatype="image"
           	mode="grid"
@@ -15,7 +15,7 @@
             :auto-upload="false"
           	:limit="6"
           	@select="select"
-            @delete="delete"
+            @delete="deleteImg"
           />
         </view>
     </view>
@@ -44,6 +44,7 @@
     data() {
       return {
         fileList: [],
+        extList: [],
         selectedTag: 0,
         content: '',
         tag: '0',
@@ -61,7 +62,10 @@
     methods: {
       select: function(e) {
         console.log("选择文件:", e);
-        this.fileList = fileUpload(e, this.fileList)
+        fileUpload(e, this.fileList).then(res => {
+          this.fileList = res
+          this.extList = res
+        })
         console.log(this.fileList)
       },
       change(e) {
@@ -70,6 +74,9 @@
         if (!e) {
           this.tag = this.range[e]['text']
         }
+      },
+      deleteImg(e) {
+        this.fileList = this.extList = this.extList.filter(item => item.uuid != e.tempFile.uuid)
       }
     },
     onNavigationBarButtonTap: function(e) {
@@ -80,13 +87,15 @@
         })
         return;
       }
-      console.log(this.fileList);
-      console.log(this.content);
       releasePost({
         content: this.content,
-        images: JSON.stringify(this.fileList),
+        images: JSON.stringify(this.extList),
         type: '0',
         tag: this.tag
+      }).then(res => {
+        uni.switchTab({
+          url: "/pages/tabbar/home/home"
+        })
       })
     },
     onReady() {

@@ -5,6 +5,20 @@
       "style" :                                                                                    
       {
           "navigationBarTitleText": "首页",
+          "enablePullDownRefresh": true,
+          "app-plus": {
+            "pullToRefresh": {
+              "offset": "90%",
+              "style": "circle"
+            }
+          }
+      }
+    },
+    {
+      "path" : "pages/detail/detail",
+      "style" :                                                                                    
+      {
+          "navigationBarTitleText": "",
           "enablePullDownRefresh": false
       }
     },
@@ -13,7 +27,27 @@
       "style" :                                                                                    
       {
         "navigationBarTitleText": "个人中心",
-        "enablePullDownRefresh": false
+        "enablePullDownRefresh": false,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "退出",
+                "fontSize": "11",
+                "float": "right",
+                "color": "#3d83a8",
+                "fontWeight": "bold"
+              },
+              {
+                "text": "&#xe60b;",
+                "fontSrc": "./static/iconfont/iconfont.ttf",
+                "fontSize": "21",
+                "float": "right",
+                "color": "#3d83a8"
+              }
+            ]
+          }
+        }
       }
     },
     {
@@ -65,8 +99,8 @@
                 "fontWeight": "bold"
               },
               {
-                "text": "&#xec46;",
-                "fontSrc": "./static/iconfont/iconfont.ttf",
+                "text": "\ue60b",
+                "fontSrc": "/static/iconfont/iconfont.ttf",
                 "fontSize": "21",
                 "float": "right",
                 "color": "#3d83a8"
@@ -112,9 +146,9 @@
   		"text": "个人"
   	}],
     "midButton": {
-      "width": "130rpx",
-      "height": "130rpx",
-      "backgroundImage": "static/images/tabbar/加号.png"
+      "width": "65px",
+      "height": "65px",
+      "backgroundImage": "static/images/tabbar/plus.png"
     }
   },
 	"uniIdRouter": {}

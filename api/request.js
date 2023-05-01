@@ -1,16 +1,19 @@
 const baseUrl = "http://127.0.0.1:8888/api"
+// const baseUrl = "http://110.41.146.56:8888/api"
 
 let showLoading = true
 
-export const request = (path, method = 'GET', data = {}) => {
-  uni.showLoading({
-    title: "请稍等",
-    mask: true
-  })
+export const request = (path, method = 'GET', data = {}, isShowLoading = true) => {
+  if (isShowLoading) {
+    uni.showLoading({
+      title: "请稍等",
+      mask: true
+    })
+  }
   
   let authorization = ''
   if (path !== '/user/login') {
-    authorization = 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAAKtWKi5NUrJScgwN8dANDXYNUtJRSq0oULIyNLMwMjMwNzcy1VEqLU4t8kwBikGYeYm5qUAtiSm5mXlKtQB5-kDBQgAAAA.aTykz9IU_sYUncUxg6TkV7B6II_hXiov7zVf2NBKS-g9_NEahc-T_i_HfXrZcgR7VSuf-UTdMrgPLfWOJ5YYrw'//uni.getStorageSync("Authorization")
+    authorization = uni.getStorageSync("Authorization")
   }
   
   return new Promise((resolve, reject) => {
@@ -22,6 +25,17 @@ export const request = (path, method = 'GET', data = {}) => {
         'Authorization': authorization
       },
       success: (res) => {
+        console.log("返回值:", res)
+        if (res.data.code === 401 && res.data.msg === "Full authentication is required to access this resource") {
+          uni.showToast({
+            title: "请先登录!",
+            icon: "error"
+          })
+          uni.reLaunch({
+            url: "/pages/login/login"
+          })
+          return;
+        }
         if (res.data.code === 200) {
           console.log("请求成功res:", res)
           resolve(res.data)
@@ -43,7 +57,9 @@ export const request = (path, method = 'GET', data = {}) => {
       },
       
       complete() {
-        uni.hideLoading()
+        if (isShowLoading) {
+          uni.hideLoading()
+        }
       }
     })
   })

@@ -1,15 +1,15 @@
 {
-    "name" : "easy_help_front",
-    "appid" : "",
+    "name" : "易帮",
+    "appid" : "__UNI__39095E0",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
-    "networkTimeout":{
-      "uploadFile":5000,
-      "request":5000,
-      "connectSocket":5000,
-      "downloadFile":5000
+    "networkTimeout" : {
+        "uploadFile" : 5000,
+        "request" : 5000,
+        "connectSocket" : 5000,
+        "downloadFile" : 5000
     },
     /* 5+App特有相关 */
     "app-plus" : {
@@ -47,9 +47,13 @@
                 ]
             },
             /* ios打包配置 */
-            "ios" : {},
+            "ios" : {
+                "dSYMs" : false
+            },
             /* SDK配置 */
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "ad" : {}
+            }
         }
     },
     /* 快应用特有相关 */
@@ -74,5 +78,12 @@
     "uniStatistics" : {
         "enable" : false
     },
-    "vueVersion" : "3"
+    "vueVersion" : "3",
+    "h5" : {
+        "router" : {
+            "mode" : "hash",
+            "base" : "./"
+        },
+        "title" : "易帮"
+    }
 }

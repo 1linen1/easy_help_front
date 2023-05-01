@@ -5,3 +5,9 @@ import {request} from "./request.js"
 export function releasePost(data) {
   return request('/post/addPost', 'POST', data)
 }
+
+// 分页查询帖子
+export function qryPostPage(data) {
+  return request("/post/qryPostPage", 'POST', data)
+}
+

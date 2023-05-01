@@ -25,8 +25,8 @@
         clickDisable: true,
         pattern: "^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$",
         formData: {
-          username: '',
-          password: ''
+          username: '2696839754@qq.com',
+          password: 'admin'
         },
         btnStyleObj: {
           color: "#acacac",
@@ -77,7 +77,8 @@
             }
           }
         },
-        deep: true
+        deep: true,
+        immediate: true
       },
     },
     methods: {
@@ -87,9 +88,9 @@
             console.log(res)
             if (res.code === 200) {
               uni.setStorageSync("Authorization", res.data.token)
-              console.log("/pages/tabbar/home/home?user=" + JSON.stringify(res.data.user))
+              uni.setStorageSync("user", JSON.stringify(res.data.user))
               uni.switchTab({
-                url: "/pages/tabbar/home/home?user=" + JSON.stringify(res.data.user)
+                url: "/pages/tabbar/home/home"
               })
             }
           }).catch(err => {
@@ -103,7 +104,7 @@
         uni.navigateTo({
           url: "/pages/register/register"
         })
-      }
+      },
     }
   }
 </script>
