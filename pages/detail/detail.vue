@@ -8,8 +8,13 @@
           <view class="time">{{this.info.createDate}}</view>
         </view>
       </view>
-      <view class="focus">
-        + 关注
+      <view v-if="this.info.userId != this.user.userId">        
+        <view class="cancel" @click="toFollow(false)" v-show="this.isFollow">
+          √ 已关注
+        </view>
+        <view @click="toFollow(true)" class="focus" v-show="!this.isFollow">
+          + 关注
+        </view>
       </view>
     </view>
     
@@ -76,6 +81,7 @@
 <script>
   import {qryPostCommentPage, addComment, deleteComment} from "../../api/comment.js"
   import {addWarning} from "../../api/warning.js"
+  import {isFollow, addFollow, removeFollow} from "../../api/follows.js"
   
   export default {
     data() {
@@ -92,10 +98,34 @@
         isLoading: false,
         hasMore: true,
         maskShow: false,
-        popStyles: {}
+        popStyles: {},
+        isFollow: false
       }
     },
     methods: {
+      toFollow(flag) {
+        if (flag) {
+          addFollow({
+            userId: this.info.userId,
+            followId: this.user.userId
+          }).then(res => {
+            console.log(res)
+            this.isFollow = true
+            this.user.follows++
+            uni.setStorageSync("user", JSON.stringify(this.user))
+          })
+        } else {
+          removeFollow({
+            userId: this.info.userId,
+            followId: this.user.userId
+          }).then(res => {
+            console.log(res);
+            this.isFollow = false
+            this.user.follows--
+            uni.setStorageSync("user", JSON.stringify(this.user))
+          })
+        }
+      },
       sendMsg() {
         if (!this.comment.trim()) {
           uni.showToast({
@@ -180,6 +210,15 @@
           this.isMoreComment = false
         }
       })
+      
+      isFollow(this.info.userId).then(res => {
+        if (res.data === true) {
+          this.isFollow = true
+        } else {
+          this.isFollow = false
+        }
+      })
+      
     },
     onReachBottom() {
       if (this.hasMore) {
@@ -278,6 +317,13 @@
         border-radius: 35rpx;
         color: #58ac6c;
         box-shadow: #b9ffbc 0 0 5px;
+      }
+      .cancel {
+        padding: 12rpx 14rpx;
+        margin-right: 40rpx;
+        border-radius: 35rpx;
+        color: #0e1d12;
+        box-shadow: #2f412f 0 0 2px;
       }
     }
     

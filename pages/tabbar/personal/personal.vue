@@ -165,7 +165,7 @@
         }]
       }
     },
-    onLoad() {
+    onShow() {
       let user = uni.getStorageSync("user")
       if (!user) {
         uni.showToast({

@@ -160,7 +160,7 @@
       
     },
     onPullDownRefresh() {
-      this.pageReq.pageSize = 1
+      this.pageReq.pageNum = 1
       qryPostPage(this.pageReq).then(res => {
         this.leftPostList = []
         this.rightPostList = []
