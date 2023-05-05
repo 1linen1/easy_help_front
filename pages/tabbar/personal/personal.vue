@@ -34,11 +34,11 @@
           <view class="num">{{this.user.dynamics}}</view>
           <text>动态</text>
         </view>
-        <view class="concerns">
+        <view class="concerns" @click="toFollows('concerns')">
           <view class="num">{{this.user.concerns}}</view>
           <text>关注</text>
         </view>
-        <view class="follows">
+        <view class="follows" @click="toFollows('follows')">
           <view class="num">{{this.user.follows}}</view>
           <text>粉丝</text>
         </view>
@@ -106,6 +106,11 @@
       }
     },
     methods: {
+      toFollows(type) {
+        uni.navigateTo({
+          url: "/pages/follows/follows?type=" + type + "&userId=" + this.user.userId
+        })
+      },
       updateNickname() {
         uni.showModal({
           title: "请输入新昵称",

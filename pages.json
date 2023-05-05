@@ -59,6 +59,14 @@
       }
     },
     {
+      "path" : "pages/follows/follows",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path" : "pages/tabbar/rank/rank",
       "style" :                                                                                    
       {
@@ -79,6 +87,14 @@
       "style" :                                                                                    
       {
         "navigationBarTitleText": "注册",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/msgDetail/msgDetail",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "",
         "enablePullDownRefresh": false
       }
     },
@@ -115,9 +131,7 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#cddfe9",
-		"backgroundColor": "#F8F8F8",
-    "animationType": "fade-in",
-    "animationDuration": 3000
+		"backgroundColor": "#F8F8F8"
 	},
   "tabBar": {
   	"color": "#7A7E83",

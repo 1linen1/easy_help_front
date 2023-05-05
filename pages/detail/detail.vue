@@ -2,7 +2,7 @@
   <view class="container">
     <view class="top">
       <view class="userInfo">
-        <image class="avatar" :src="this.info.avatar"></image>
+        <image @click="toMsg" class="avatar" :src="this.info.avatar"></image>
         <view class="profile">
           <view class="name">{{this.info.nickname}}</view>
           <view class="time">{{this.info.createDate}}</view>
@@ -82,6 +82,7 @@
   import {qryPostCommentPage, addComment, deleteComment} from "../../api/comment.js"
   import {addWarning} from "../../api/warning.js"
   import {isFollow, addFollow, removeFollow} from "../../api/follows.js"
+  import {addPostViews} from "../../api/post.js"
   
   export default {
     data() {
@@ -103,6 +104,30 @@
       }
     },
     methods: {
+      toMsg() {
+        let itemList = ['前往主页', '私聊']
+        if (this.info.userId === this.user.userId) {
+          itemList = ['前往主页']
+        }
+        uni.showActionSheet({
+          itemList,
+          success: (res) => {
+            if (res.tapIndex === 0) {
+              console.log("前往主页...")
+            } else if (res.tapIndex === 1) {
+              let user = {
+                userId: this.info.userId,
+                avatar: this.info.avatar,
+                nickname: this.info.nickname
+              }
+              uni.navigateTo({
+                url: "/pages/msgDetail/msgDetail?user=" + JSON.stringify(user)
+              })
+            }
+          }
+        })
+        
+      },
       toFollow(flag) {
         if (flag) {
           addFollow({
@@ -111,7 +136,7 @@
           }).then(res => {
             console.log(res)
             this.isFollow = true
-            this.user.follows++
+            this.user.concerns++
             uni.setStorageSync("user", JSON.stringify(this.user))
           })
         } else {
@@ -121,7 +146,7 @@
           }).then(res => {
             console.log(res);
             this.isFollow = false
-            this.user.follows--
+            this.user.concerns--
             uni.setStorageSync("user", JSON.stringify(this.user))
           })
         }
@@ -218,6 +243,8 @@
           this.isFollow = false
         }
       })
+      
+      addPostViews(this.info.postId)
       
     },
     onReachBottom() {

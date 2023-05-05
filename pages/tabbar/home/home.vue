@@ -106,7 +106,30 @@
       },
       changeActive(index) {
         this.activeIndex = index;
-        
+      
+        this.pageReq.sortedType = this.tagList[index].value
+        this.pageReq.pageNum = 1
+        qryPostPage(this.pageReq).then(res => {
+          this.leftPostList = []
+          this.rightPostList = []
+          let records = res.data.records
+          if (records.length <= 0) {
+            this.hasMore = false
+          }
+          for (let i = 0; i < records.length; i++) {
+            if (records[i]['images'] && records[i]['images'].length > 0) {
+              records[i]['images'] = JSON.parse(records[i]['images'])
+            }
+            if (i % 2 === 0) {
+              this.leftPostList.push(records[i])
+            } else {
+              this.rightPostList.push(records[i])
+            }
+          }
+          this.postList = records
+        }).catch(err => {
+          console.log(err)
+        })
       },
       debounce() {
         // 防抖动
@@ -279,9 +302,13 @@
         .profile {
           margin-top: 10rpx;
           display: -webkit-box;
-          overflow: hidden;  
+          overflow: hidden;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
+          text-overflow: ellipsis;
+          // 兼容英文/数字
+          word-break: break-all;
+          white-space: wrap;
           font-size: 25rpx;
           padding: 2rpx 2rpx 0 13rpx;
         }

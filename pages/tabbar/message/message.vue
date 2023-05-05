@@ -18,7 +18,7 @@
     <view class="hr"></view>
     
     <view class="bottomContainer">
-      <view class="itemBox" v-for="item in 10">
+      <view class="itemBox" v-for="item in 1">
         <view class="left">
           <image class="img" src="../../../static/images/message/sysMsg.png"></image>
         </view>
@@ -31,11 +31,38 @@
         </view>
       </view>
     </view>
+    
+    
+    
   </view>
 </template>
 
-<script setup>
-  
+<script>
+  import ws from "../../../api/websocket.js"
+  export default {
+    data() {
+      return {
+        user: {},
+      }
+    },
+    methods: {
+      toMsgDetail() {
+        uni.navigateTo({
+          url: "/pages/msgDetail/msgDetail"
+        })
+      }
+    },
+    onLoad() {
+      this.user = JSON.parse(uni.getStorageSync("user"))
+      console.log(this.$websocket)
+      if (!this.$websocket && !this.$websocket.is_open_socket) {
+        console.log("连接前状态：", this.$websocket)
+        this.$setWebsocket(this.user.userId)
+        console.log("连接后状态：", this.$websocket)
+      }
+      // this.websocket = new ws("ws://110.41.146.56:8888/websocket/" + this.user.userId, 5000)
+    }
+  }
 </script>
 
 <style lang="less">
@@ -76,7 +103,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 12rpx;
+            font-size: 15rpx;
             color: #c3c3c3;
           }
         }

@@ -11,3 +11,8 @@ export function qryPostPage(data) {
   return request("/post/qryPostPage", 'POST', data)
 }
 
+// 增加浏览量
+export function addPostViews(postId) {
+  return request("/post/addViews/" + postId, 'GET')
+}
+
