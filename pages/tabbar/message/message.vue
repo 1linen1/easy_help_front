@@ -18,16 +18,16 @@
     <view class="hr"></view>
     
     <view class="bottomContainer">
-      <view class="itemBox" v-for="item in 1">
+      <view class="itemBox" v-for="item in chatUserList" @click="toMsgDetail(item)">
         <view class="left">
-          <image class="img" src="../../../static/images/message/sysMsg.png"></image>
+          <image class="img" :src="item.avatar"></image>
         </view>
         <view class="right">
           <view class="box">
-            <view class="nickname">系统消息</view>
-            <view class="content">内容。。。一些内45665555555555555555555555555555555555555555555555</view>
+            <view class="nickname">{{item.nickname}}</view>
+            <view class="content">{{item.lastMessage?.content || ''}}</view>
           </view>
-          <view class="time">05-02 17:43</view>
+          <view class="time">{{item.lastMessage?.createDate?.slice(5) || ''}}</view>
         </view>
       </view>
     </view>
@@ -39,16 +39,18 @@
 
 <script>
   import ws from "../../../api/websocket.js"
+  import {qryChatList} from "../../../api/user.js"
   export default {
     data() {
       return {
         user: {},
+        chatUserList: [],
       }
     },
     methods: {
-      toMsgDetail() {
+      toMsgDetail(item) {
         uni.navigateTo({
-          url: "/pages/msgDetail/msgDetail"
+          url: "/pages/msgDetail/msgDetail?user=" + JSON.stringify(item)
         })
       }
     },
@@ -60,7 +62,14 @@
         this.$setWebsocket(this.user.userId)
         console.log("连接后状态：", this.$websocket)
       }
-      // this.websocket = new ws("ws://110.41.146.56:8888/websocket/" + this.user.userId, 5000)
+      qryChatList(this.user.userId).then(res => {
+        this.chatUserList = res.data
+      })
+    },
+    onShow() {
+      qryChatList(this.user.userId).then(res => {
+        this.chatUserList = res.data
+      })
     }
   }
 </script>

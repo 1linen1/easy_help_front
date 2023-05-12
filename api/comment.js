@@ -12,6 +12,6 @@ export function addComment(data) {
 }
 
 // 删除评论
-export function deleteComment(commentId) {
-  return request("/comment/deleteComment/" + commentId, 'GET')
+export function deleteComment(data) {
+  return request("/comment/deleteComment", 'POST', data)
 }

@@ -87,7 +87,18 @@ export default class websocketUtil {
 			return callback(res)
 		})
 	}
- 
+  
+  close() {
+ 		if (!this.is_open_socket) {
+ 			return
+ 		}
+ 		this.socketTask.close({
+ 			success: () => {
+        this.is_open_socket = false
+ 				console.log("连接关闭成功")
+ 			}
+ 		});
+ 	}
 }
 
 

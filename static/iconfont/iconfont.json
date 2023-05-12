@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "12797047",
+      "name": "积分",
+      "font_class": "jifen",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "11200574",
+      "name": "排行",
+      "font_class": "paihang",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
       "icon_id": "11855586",
       "name": "退出登录",
       "font_class": "tuichudenglu",

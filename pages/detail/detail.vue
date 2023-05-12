@@ -8,12 +8,24 @@
           <view class="time">{{this.info.createDate}}</view>
         </view>
       </view>
+      
       <view v-if="this.info.userId != this.user.userId">        
         <view class="cancel" @click="toFollow(false)" v-show="this.isFollow">
           √ 已关注
         </view>
         <view @click="toFollow(true)" class="focus" v-show="!this.isFollow">
           + 关注
+        </view>
+      </view>
+      <view v-else-if="this.info.userId === this.user.userId && this.info.resolved === '00U' && this.type != 'dynamic'">
+        <view @click="toAssignScores()" class="assign" v-show="!this.isFollow">
+          分配积分
+        </view>
+      </view>
+      <view class="resolveBox" v-else-if="this.info.userId === this.user.userId && this.info.resolved === '00R' && this.type != 'dynamic'">
+        <uni-icons type="checkbox" color="#60a653" size="25"></uni-icons>
+        <view class="resolve">
+          已解决
         </view>
       </view>
     </view>
@@ -24,6 +36,12 @@
       <view class="image">
         <uni-file-picker readonly v-model="this.info.images"></uni-file-picker>
       </view>
+      <view class="collect" v-if="this.user.userId != this.info.userId">
+        <view class="box" @click="addCollect">
+          <uni-icons v-if="!this.isCollect" type="star-filled" size="30" color="#ccc"></uni-icons>
+          <uni-icons v-else type="star-filled" size="30" color="#e78282"></uni-icons>
+        </view>
+      </view>
     </view>
     
     <view class="hr"></view>
@@ -32,7 +50,7 @@
       <view class="inputArea">
         <image class="avatar" :src="this.user.avatar"></image>
         <view class="comment">  
-          <uni-easyinput class="info" v-model="this.comment" type="textarea" :autoHeight="true" confirmType="send" @iconClick="sendMsg" @confirm="sendMsg" placeholder="懂得的话赶紧评论帮助一下吧^O^" suffixIcon="chat"></uni-easyinput>
+          <uni-easyinput :disabled="!this.info.resolved || this.info.resolved != '00U'" class="info" v-model="this.comment" type="textarea" :autoHeight="true" confirmType="send" @iconClick="sendMsg" @confirm="sendMsg" placeholder="懂得的话赶紧评论帮助一下吧^O^" suffixIcon="chat"></uni-easyinput>
         </view>
       </view>
       
@@ -82,13 +100,14 @@
   import {qryPostCommentPage, addComment, deleteComment} from "../../api/comment.js"
   import {addWarning} from "../../api/warning.js"
   import {isFollow, addFollow, removeFollow} from "../../api/follows.js"
-  import {addPostViews} from "../../api/post.js"
+  import {addPostViews, addHistory, addCollect, qryIsCollect, getPostById} from "../../api/post.js"
   
   export default {
     data() {
       return {
         info: {},
         comment: '',
+        type: 'help',
         commentList: [],
         user: {},
         pageReq: {
@@ -100,10 +119,30 @@
         hasMore: true,
         maskShow: false,
         popStyles: {},
-        isFollow: false
+        isFollow: false,
+        isCollect: false
       }
     },
     methods: {
+      toAssignScores() {
+        uni.navigateTo({
+          url: "/pages/scoresAssgin/scoresAssgin?postId=" + this.info.postId + "&userId=" + this.info.userId
+        })
+      },
+      addCollect() {
+        addCollect({
+          userId: this.user.userId,
+          postId: this.info.postId,
+        }).then(res => {
+          if (!this.isCollect) {
+            uni.showToast({
+              title: "收藏成功!",
+              icon: "none"
+            })
+          }
+          this.isCollect = !this.isCollect
+        })
+      },
       toMsg() {
         let itemList = ['前往主页', '私聊']
         if (this.info.userId === this.user.userId) {
@@ -113,6 +152,9 @@
           itemList,
           success: (res) => {
             if (res.tapIndex === 0) {
+              uni.navigateTo({
+                url: "/pages/userHome/userHome?userId=" + this.info.userId
+              })
               console.log("前往主页...")
             } else if (res.tapIndex === 1) {
               let user = {
@@ -152,6 +194,13 @@
         }
       },
       sendMsg() {
+        if (!this.info.resolved || this.info.resolved != '00U') {
+          uni.showToast({
+            title: "该帖子已解决!",
+            icon: "none"
+          })
+          return;
+        }
         if (!this.comment.trim()) {
           uni.showToast({
             title: "评论不能为空!",
@@ -161,7 +210,8 @@
           addComment({
             postId: this.info.postId,
             content: this.comment,
-            userId: this.user.userId
+            userId: this.user.userId,
+            postUserId: this.info.userId
           }).then(res => {
             this.comment = ''
             this.pageReq.pageNum = 1
@@ -184,7 +234,12 @@
                 title: "您确定要删除该评论吗?",
                 success:  (res) => {
                   if (res.confirm) {
-                    deleteComment(item.commentId).then((res) => {
+                    deleteComment({
+                      commentId: item.commentId,
+                      postId: this.info.postId,
+                      userId: item.userId,
+                      postUserId: this.info.userId
+                    }).then((res) => {
                       this.commentList = this.commentList.filter(comment => comment.commentId != item.commentId)
                     })
                   } else if (res.cancel) {
@@ -225,6 +280,9 @@
       }
     },
     onLoad(option) {
+      if (option.type && option.type === 'dynamic') {
+        this.type = 'dynamic'
+      }
       this.info = JSON.parse(option.info)
       console.log("数据:", this.info)
       this.user = JSON.parse(uni.getStorageSync("user"))
@@ -245,7 +303,24 @@
       })
       
       addPostViews(this.info.postId)
+      addHistory({
+        userId: this.user.userId,
+        postId: this.info.postId
+      })
       
+      if (this.user.userId != this.info.userId) {
+        qryIsCollect({
+          userId: this.user.userId,
+          postId: this.info.postId
+        }).then(res => {
+          this.isCollect = res.data
+        })
+      }
+    },
+    onShow() {
+      getPostById(this.info.postId).then(res => {
+        this.info.resolved = res.data.resolved
+      })
     },
     onReachBottom() {
       if (this.hasMore) {
@@ -306,7 +381,7 @@
     .hr {
       height: 0;
       border-bottom: 1rpx #eee dotted;
-      margin: 30rpx 0;
+      margin: 20rpx 0;
     }
     
     .top {
@@ -352,6 +427,20 @@
         color: #0e1d12;
         box-shadow: #2f412f 0 0 2px;
       }
+      .assign {
+        padding: 12rpx 14rpx;
+        margin-right: 40rpx;
+        border-radius: 20rpx;
+        color: #afab3c;
+        box-shadow: #dfc129 0 0 2px;
+      }
+      .resolveBox {
+        display: flex;
+        margin-right: 50rpx;
+        .resolve {
+          color: #468a56;
+        }
+      }
     }
     
     .middle {
@@ -361,6 +450,15 @@
         width: 100%;
         min-height: 200rpx;
         font-size: 38rpx;
+      }
+      .collect {
+        text-align: end;
+        margin-top: 15rpx;
+        margin-bottom: -35rpx;
+        .box {
+          display: inline-block;
+          padding: 10rpx;
+        }
       }
     }
     

@@ -65,7 +65,7 @@
       </view>
       <view class="row" v-for="(item, index) in otherUserList">
         <view class="name">{{item.nickname}}</view>
-        <view class="scores">{{this.activeFlag === 'Current' ? this.userList[2].scoresCurrent : this.userList[2].scoresTotal}}</view>
+        <view class="scores">{{this.activeFlag === 'Current' ? item.scoresCurrent : item.scoresTotal}}</view>
         <view class="rank">{{index + 3}}</view>
       </view>
       <view class="bottom" v-if="this.isLoading">
@@ -144,6 +144,7 @@
           return;
         }
         this.activeFlag = po
+        this.pageReqData.orderType = this.activeFlag
         this.pageReqData.pageNum = 1
         getRankPage(this.pageReqData).then(res => {
           this.userList = res.data.records
@@ -155,7 +156,7 @@
         })
         let user = JSON.parse(uni.getStorageSync("user") || '{}')
         
-        getMyRank({userId: user.userId, orderType: 'Current'}).then(res => {
+        getMyRank({userId: user.userId, orderType: this.activeFlag}).then(res => {
           this.user = res.data
           uni.setStorageSync("user", JSON.stringify(this.user))
         })

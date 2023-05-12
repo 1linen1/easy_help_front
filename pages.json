@@ -67,11 +67,85 @@
       }
     },
     {
+      "path" : "pages/history/history",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/myPost/myPost",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/scoresAssgin/scoresAssgin",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "积分分配",
+        "enablePullDownRefresh": false,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "完成",
+                "fontSize": "16",
+                "float": "right",
+                "color": "#3d83a8",
+                "fontWeight": "bold"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
       "path" : "pages/tabbar/rank/rank",
       "style" :                                                                                    
       {
         "navigationBarTitleText": "排行榜",
         "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/search/search",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "搜索",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/userHome/userHome",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path" : "pages/dynamic/dynamic",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "我的动态",
+        "enablePullDownRefresh": true,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "发布动态",
+                "fontSize": "14",
+                "float": "right",
+                "color": "#3d83a8",
+                "fontWeight": "bold"
+              }
+            ]
+          }
+        }
       }
     },
     {

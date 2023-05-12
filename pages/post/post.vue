@@ -2,7 +2,7 @@
   <view class="container">
     <!-- <uni-notice-bar scrollable single text="猜猜我是谁?"></uni-notice-bar> -->
     <view class="contentContainer">
-      <textarea v-model="content" placeholder="分享我的动态"></textarea>
+      <textarea class="inputArea" v-model="content" placeholder="分享我的动态"></textarea>
     </view>
     <view class="imageUpload">
         <view>
@@ -11,7 +11,7 @@
             :imageStyles="imageStyles"
           	file-mediatype="image"
           	mode="grid"
-          	file-extname="png,jpg"
+          	file-extname="png,jpg,jpeg"
             :auto-upload="false"
           	:limit="6"
           	@select="select"
@@ -19,7 +19,7 @@
           />
         </view>
     </view>
-    <view class="tags">
+    <view class="tags" v-if="this.type === '0'">
       <view class="left">
         <uni-icons type="list" size="30"></uni-icons>
         <text class="type">分类</text>
@@ -33,12 +33,20 @@
         ></uni-data-select>
       </view>
     </view>
+    <view class="bottom" v-if="this.type === '0'">
+      <view class="iconBox">
+        <view class="scoreIcon iconfont icon-jifen"></view>
+        <view class="title">附加积分</view>
+      </view>
+      <uni-number-box :min="0" :max="this.max" @change="changeScore"></uni-number-box>
+    </view>
+    <view class="tip" @click="" v-if="this.type === '0'">温馨提示：您当前拥有{{this.max}}积分</view>
   </view>
 </template>
 
 <script>
   import { fileUpload } from "../../api/file.js"
-  import { releasePost } from "../../api/post.js"
+  import { releasePost, getUserInfo, qryIsCollect } from "../../api/post.js"
   
   export default {
     data() {
@@ -49,6 +57,9 @@
         content: '',
         tag: '0',
         range: [],
+        max: 0,
+        scores: 0,
+        type: '0', // 0求助帖，1动态帖
         imageStyles: {
           border: {
             color: "#eaa",
@@ -60,6 +71,10 @@
       }
     },
     methods: {
+      changeScore(value) {
+        console.log(value)
+        this.scores = value
+      },
       select: function(e) {
         console.log("选择文件:", e);
         fileUpload(e, this.fileList).then(res => {
@@ -90,11 +105,19 @@
       releasePost({
         content: this.content,
         images: JSON.stringify(this.extList),
-        type: '0',
-        tag: this.tag
+        type: this.type, // 求助帖0，1动态帖
+        tag: this.tag,
+        scores: !this.scores ? 0 : this.scores
       }).then(res => {
-        uni.switchTab({
-          url: "/pages/tabbar/home/home"
+        let user = JSON.parse(uni.getStorageSync("user"))
+        if (!this.scores) {
+          this.scores = 0
+        }
+        user.scoresCurrent = this.max - this.scores
+        uni.setStorageSync("user", JSON.stringify(user))
+        
+        uni.navigateBack({
+          delta: 1
         })
       })
     },
@@ -105,6 +128,16 @@
         {value: 2, text: "英语"},
         {value: 3, text: "大物"}
       ]
+    },
+    onLoad(option) {
+      if (option.type === 'dynamic') {
+        this.type = '1'
+      }
+      let user = JSON.parse(uni.getStorageSync("user"))
+      getUserInfo(user.userId).then(res => {
+        this.max = res.data.scoresCurrent
+      })
+    
     }
   }
 </script>
@@ -115,13 +148,16 @@
     .contentContainer {
       margin-bottom: 10rpx;
       border: 1rpx solid #eea;
+      .inputArea {
+        width: 100%;
+      }
     }
     .tags {
       display: flex;
       justify-content: space-between;
       align-items: center;
       vertical-align: middle;
-      border: 1rpx solid #eee;
+      // border: 1rpx solid #eee;
       margin-top: 20rpx;
       .left {
         display: flex;
@@ -134,6 +170,26 @@
       .right {
         width: 180rpx;
       }
+    }
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20rpx;
+      .iconBox {
+        display: flex;
+        .scoreIcon {
+          color: #333333;
+          font-weight: 700;
+          font-size: 45rpx;
+          margin-left: 7rpx;
+          margin-right: 15rpx;
+        }
+      }
+    }
+    .tip {
+      color: #a8a8a8;
+      font-size: 12rpx;
+      text-align: end;
     }
   }
 </style>

@@ -1,23 +1,23 @@
 <template>
   <view class="container">
-    <view class="fixed">
-      <!-- 头部搜索 -->
-      <view class="search" @click="toSearch">
-        <uni-search-bar placeholder="请输入" clearButton="none" cancelButton="none"></uni-search-bar>
-      </view>
-      
-      <!-- 分类 -->
-      <view class="maskArea">
-        <view class="typeArea">
-          <view class="item" v-for="(item, index) in this.tagList">
-            <view @click="changeActive(index)" class="tag" :class="{active: index === activeIndex}">{{item.label}}</view>
-          </view>
+    <view class="searchBox">
+      <uni-search-bar v-model="this.searchContent" placeholder="请输入" :focus="true" clearButton="auto" cancelButton="auto" @focus="focus" @confirm="search" @cancel="toHome"></uni-search-bar>
+    </view>
+    <view class="historyBox"  v-show="this.isInput">
+      <uni-section class="mb-10" title="历史记录" type="line">
+        <view class="historyList">
+          <view class="item" @click="search({value: item})" v-for="item in this.historyList" :key="item">{{item}}</view>
         </view>
-      </view>
+        <template v-slot:right>
+          <view class="rightBox">
+            <uni-icons v-show="this.historyList.length > 0" type="trash" size="20" @click="deleteAll"></uni-icons>
+          </view>
+        </template>
+      </uni-section>
     </view>
     
     <!-- 帖子区域 -->
-    <view class="postContainer">
+    <view class="postContainer"  v-show="!this.isInput">
       <view class="left">
         <view class="itemBox" @click="toDetail(item)" v-for="item in this.leftPostList">
           <view class="imgBox" v-if="item.images"><image class="img" mode="widthFix" :src="item.images ? item.images[0].url : ''"></image></view>
@@ -53,67 +53,68 @@
       </view>
     </view>
     
-    <view class="bottom" v-if="this.isLoading">
-        <image class="loading" src="../../../static/images/rank/loading.png"></image>
-    </view>
-    <view class="bottom" v-if="!this.isLoading && !this.hasMore">
-        <view style="color: #b2a796;">没有更多数据了~~</view>
-    </view>
-    
   </view>
 </template>
 
 <script>
-  import {qryPostPage} from "../../../api/post.js"
+  import {qryPostPage, qryPostPageByContent} from "../../api/post.js"
   export default {
     data() {
       return {
-        tagList: [
-          {
-            label: '猜你喜欢',
-            value: 'guess'
-          },
-          {
-            label: '最新发布',
-            value: 'time'
-          },
-          {
-            label: '最多浏览',
-            value: 'views'
-          },
-          {
-            label: '最多积分',
-            value: 'scores'
-          }
-        ],
+        searchContent: '',
+        historyList: [],
+        user: {},
+        isInput: true,
         postList: [],
         leftPostList: [],
         rightPostList: [],
         pageReq: {
           pageSize: 10,
           pageNum: 1,
-          sortedType: "time"
+          sortedType: "time",
+          content: ""
         },
         isLoading: false,
         hasMore: true,
-        activeIndex: 1,
-        debounce1: this.debounce()
-      }
+      };
     },
     methods: {
-      toSearch() {
+      toDetail(item) {
+        let info = JSON.stringify(item)
+        let url = "/pages/detail/detail?info=" + info
         uni.navigateTo({
-          url: "/pages/search/search"
+          url
         })
       },
-      changeActive(index) {
-        this.activeIndex = index;
-      
-        this.pageReq.sortedType = this.tagList[index].value
+      deleteAll() {
+        uni.showModal({
+          title: "你确定要全部清除吗?",
+          success: (res) => {
+            if (res.confirm) {
+              this.historyList = []
+              uni.removeStorageSync(this.user.userId + "history")
+            }
+          }
+        })
+      },
+      focus() {
+        this.isInput = true
+      },
+      search(res) {
+        this.isInput = false
+        if (!this.searchContent) {
+          this.searchContent = res.value
+        }
+        this.historyList = this.historyList.filter(item => item !== res.value)
+        this.historyList.unshift(res.value)
+        if (this.historyList.length > 15) {
+          this.historyList.splice(15)
+        }
+        uni.setStorageSync(this.user.userId + "history", JSON.stringify(this.historyList))
+        
         this.pageReq.pageNum = 1
-        qryPostPage(this.pageReq).then(res => {
-          this.leftPostList = []
-          this.rightPostList = []
+        this.pageReq.content = res.value
+        qryPostPageByContent(this.pageReq).then(res => {
           let records = res.data.records
           if (records.length <= 0) {
             this.hasMore = false
@@ -129,92 +130,22 @@
             }
           }
           this.postList = records
-        }).catch(err => {
-          console.log(err)
         })
+        
       },
-      debounce() {
-        // 防抖动
-        let timer = null
-        return function() {          
-          if (timer) {
-            clearTimeout(timer)
-          }
-          timer = setTimeout(() => {
-            const activeItem = uni.createSelectorQuery().in(this).select('.active');
-            activeItem.boundingClientRect(data => {
-              console.log("得到布局位置信息" + JSON.stringify(data));
-              uni.getSystemInfo({
-                success(res) {
-                  console.log("当前屏幕宽度为: ", res.screenWidth)
-                }
-              })
-              timer = null
-            }).exec();
-          }, 300)
+      toHome() {
+        if (this.isInput) {
+          uni.navigateBack({delta: 1})
+        } else {
+          this.isInput = true
         }
-      },
-      toDetail(item) {
-        let info = JSON.stringify(item)
-        let url = "/pages/detail/detail?info=" + info
-        uni.navigateTo({
-          url
-        })
-      },
-    },
-    onLoad() {
-      qryPostPage(this.pageReq).then(res => {
-        let records = res.data.records
-        if (records.length <= 0) {
-          this.hasMore = false
-        }
-        for (let i = 0; i < records.length; i++) {
-          if (records[i]['images'] && records[i]['images'].length > 0) {
-            records[i]['images'] = JSON.parse(records[i]['images'])
-          }
-          if (i % 2 === 0) {
-            this.leftPostList.push(records[i])
-          } else {
-            this.rightPostList.push(records[i])
-          }
-        }
-        this.postList = records
-      }).catch(err => {
-        console.log(err)
-      })
-      
-    },
-    onPullDownRefresh() {
-      this.pageReq.pageNum = 1
-      qryPostPage(this.pageReq).then(res => {
-        this.leftPostList = []
-        this.rightPostList = []
-        let records = res.data.records
-        if (records.length <= 0) {
-          this.hasMore = false
-        }
-        for (let i = 0; i < records.length; i++) {
-          if (records[i]['images'] && records[i]['images'].length > 0) {
-            records[i]['images'] = JSON.parse(records[i]['images'])
-          }
-          if (i % 2 === 0) {
-            this.leftPostList.push(records[i])
-          } else {
-            this.rightPostList.push(records[i])
-          }
-        }
-        this.postList = records
-      }).catch(err => {
-        console.log(err)
-      }).finally(() => {
-        uni.stopPullDownRefresh()
-      })
+      }
     },
     onReachBottom() {
       if (this.hasMore) {
         this.pageReq.pageNum++
         this.isLoading = true       
-        qryPostPage(this.pageReq).then(res => {
+        qryPostPageByContent(this.pageReq).then(res => {
           if (res.data.records.length <= 0) {
             this.hasMore = false
           } else {
@@ -238,57 +169,48 @@
         })
       }
     },
+    onLoad() {
+      this.user = JSON.parse(uni.getStorageSync("user") || '{}')
+      if (!this.user.userId) {
+        uni.showToast({
+          title: "请先登录!",
+          icon: "none"
+        })
+        uni.reLaunch({
+          url: "/pages/login/login"
+        })
+      }
+      this.historyList = JSON.parse(uni.getStorageSync(this.user.userId + "history") || '[]')
+    }
   }
 </script>
 
 <style lang="less">
   .container {
-    .fixed {
-      position: fixed;
-      top: var(--window-top);
-      left: 0;
-      width: 100%;
-      background-color: #fff;
-      z-index: 10000;
-      .search {
-        width: 750rpx;
-      }
-      // 分类区域
-      .maskArea {
+    .historyBox {
+      .historyList {
+        display: flex;
+        flex-wrap: wrap;
         overflow: hidden;
-        height: 100rpx;
-        width: 100%;
-        padding: 0 10rpx;
-        .typeArea {
-          display: flex;
-          width: 100%;
+        .item {
+          margin-left: 20rpx;
+          margin-bottom: 10rpx;
+          max-width: 200rpx;
+          overflow: hidden;
           white-space: nowrap;
-          overflow: auto;
-          padding: 20rpx 20rpx;
-          padding-bottom: 50rpx;
-          .item {
-            .tag {
-              padding: 12rpx 14rpx;
-              margin-right: 40rpx;
-              border-radius: 17rpx;
-              color: #695959;
-              box-shadow: #b7b7b7 0 0 10px;
-            }
-            .active {
-              background-color: #d4feff;
-              font-weight: 600;
-              color: #5895e5;
-            }
-          }
+          text-overflow: ellipsis;
+          padding: 15rpx 10rpx;
+          border: 1rpx solid #ccc;
+          box-shadow: #b7b7b7 0 0 1px;
+          border-radius: 15rpx;
         }
       }
     }
-  
+    
     .postContainer {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-start;
-      padding-top: 200rpx;
       .itemBox {
         width: 330rpx;
         min-width: 330rpx;
@@ -354,6 +276,5 @@
         height: 50rpx;
       }
     }
-    
   }
 </style>

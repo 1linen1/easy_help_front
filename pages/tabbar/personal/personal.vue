@@ -4,7 +4,7 @@
     <view class="top">
       <view class="left">
         <uni-file-picker limit="1" :del-icon="false" disable-preview :imageStyles="imageStyles"
-        					file-mediatype="image" file-extname="png,jpg" :auto-upload="false" v-model="fileList" @select="select">选择</uni-file-picker>
+        					file-mediatype="image" file-extname="png,jpg,jpeg" :auto-upload="false" v-model="fileList" @select="select">选择</uni-file-picker>
         <view class="content">
           <view class="name" @click="updateNickname">
             <view class="username">{{this.user.nickname}}</view>
@@ -31,7 +31,7 @@
     <view class="middle">
       <view class="top">
         <view class="dynamic">
-          <view class="num">{{this.user.dynamics}}</view>
+          <view class="num" @click="toDynamic">{{this.user.dynamics}}</view>
           <text>动态</text>
         </view>
         <view class="concerns" @click="toFollows('concerns')">
@@ -44,19 +44,19 @@
         </view>
       </view>
       <view class="bottom">
-        <view class="posts">
+        <view class="posts" @click="toMyPost('myPost')">
           <image src="../../../static/images/personal/posts.png"></image>
           <text>我的帖子</text>
         </view>
-        <view class="viewHistory">
+        <view class="viewHistory" @click="toHistory('view')">
           <image src="../../../static/images/personal/viewHistory.png"></image>
           <text>浏览历史</text>
         </view>
-        <view class="helpHistory">
+        <view class="helpHistory" @click="toHistory('help')">
           <image src="../../../static/images/personal/helpHistory.png"></image>
           <text>帮助历史</text>
         </view>
-        <view class="collects">
+        <view class="collects" @click="toMyPost('collect')">
           <image src="../../../static/images/personal/collects.png"></image>
           <text>我的收藏</text>
         </view>
@@ -103,9 +103,25 @@
           extname: 'png',
           name: 'avatar.png'
         }],
+        websocket: '',
       }
     },
     methods: {
+      toDynamic() {
+        uni.navigateTo({
+          url: "/pages/dynamic/dynamic"
+        })
+      },
+      toMyPost(type) {
+        uni.navigateTo({
+          url: "/pages/myPost/myPost?type=" + type
+        })
+      },
+      toHistory(type) {
+        uni.navigateTo({
+          url: "/pages/history/history?type=" + type
+        })
+      },
       toFollows(type) {
         uni.navigateTo({
           url: "/pages/follows/follows?type=" + type + "&userId=" + this.user.userId
@@ -177,6 +193,9 @@
           title: "当前未登陆，请登录！",
           icon: "none"
         })
+        uni.navigateTo({
+          url: "/pages/login/login"
+        })
       } else {
         this.user = JSON.parse(user)
         if (this.user.avatar) {          
@@ -192,18 +211,25 @@
       }
     },
     onNavigationBarButtonTap() {
+      console.log(this.websocket)
       uni.showModal({
         title: "温馨提示",
         content: "您确定要退出吗?",
-        success(res) {
+        success: (res) => {
           if (res.confirm) {            
             uni.clearStorageSync("user");
+            if (!!this.websocket) {
+              this.websocket.close();
+            }
             uni.reLaunch({
               url: "/pages/login/login"
             })
           }
         }
       }) 
+    },
+    onLoad() {
+      this.websocket = this.$websocket;
     }
   }
 </script>
