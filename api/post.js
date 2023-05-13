@@ -12,8 +12,8 @@ export function qryPostPage(data) {
 }
 
 // 增加浏览量
-export function addPostViews(postId) {
-  return request("/post/addViews/" + postId, 'GET')
+export function addPostViews(data) {
+  return request("/post/addViews", 'POST', data)
 }
 
 // 增加浏览历史
@@ -74,4 +74,9 @@ export function qryPostPageByContent(data) {
 // 查询动态帖
 export function qryDynamicPage(data) {
   return request("/post/qryDynamicPage", "POST", data)
+}
+
+// 猜你喜欢
+export function qryRecommendPost(data) {
+  return request("/post/qryRecommendPost", "POST", data)
 }

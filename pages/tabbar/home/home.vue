@@ -4,13 +4,14 @@
       <!-- 头部搜索 -->
       <view class="search" @click="toSearch">
         <uni-search-bar placeholder="请输入" clearButton="none" cancelButton="none"></uni-search-bar>
+        <view class="mask"></view>
       </view>
       
       <!-- 分类 -->
       <view class="maskArea">
         <view class="typeArea">
           <view class="item" v-for="(item, index) in this.tagList">
-            <view @click="changeActive(index)" class="tag" :class="{active: index === activeIndex}">{{item.label}}</view>
+            <view @click="changeActive(index, item)" class="tag" :class="{active: index === activeIndex}">{{item.label}}</view>
           </view>
         </view>
       </view>
@@ -53,10 +54,10 @@
       </view>
     </view>
     
-    <view class="bottom" v-if="this.isLoading">
+    <view class="bottomBox" v-if="this.isLoading">
         <image class="loading" src="../../../static/images/rank/loading.png"></image>
     </view>
-    <view class="bottom" v-if="!this.isLoading && !this.hasMore">
+    <view class="bottomBox" v-if="!this.isLoading && !this.hasMore">
         <view style="color: #b2a796;">没有更多数据了~~</view>
     </view>
     
@@ -64,10 +65,11 @@
 </template>
 
 <script>
-  import {qryPostPage} from "../../../api/post.js"
+  import {qryPostPage, qryRecommendPost} from "../../../api/post.js"
   export default {
     data() {
       return {
+        user: {},
         tagList: [
           {
             label: '猜你喜欢',
@@ -92,7 +94,8 @@
         pageReq: {
           pageSize: 10,
           pageNum: 1,
-          sortedType: "time"
+          sortedType: "time",
+          userId: 0,
         },
         isLoading: false,
         hasMore: true,
@@ -106,32 +109,56 @@
           url: "/pages/search/search"
         })
       },
-      changeActive(index) {
+      changeActive(index, item) {
         this.activeIndex = index;
-      
+        
         this.pageReq.sortedType = this.tagList[index].value
         this.pageReq.pageNum = 1
-        qryPostPage(this.pageReq).then(res => {
-          this.leftPostList = []
-          this.rightPostList = []
-          let records = res.data.records
-          if (records.length <= 0) {
-            this.hasMore = false
-          }
-          for (let i = 0; i < records.length; i++) {
-            if (records[i]['images'] && records[i]['images'].length > 0) {
-              records[i]['images'] = JSON.parse(records[i]['images'])
+        if (item.value === 'guess') {
+          // 猜你喜欢
+          qryRecommendPost(this.pageReq).then(res => {
+            this.leftPostList = []
+            this.rightPostList = []
+            let records = res.data
+            if (records.length <= 0) {
+              this.hasMore = false
             }
-            if (i % 2 === 0) {
-              this.leftPostList.push(records[i])
-            } else {
-              this.rightPostList.push(records[i])
+            for (let i = 0; i < records.length; i++) {
+              if (records[i]['images'] && records[i]['images'].length > 0) {
+                records[i]['images'] = JSON.parse(records[i]['images'])
+              }
+              if (i % 2 === 0) {
+                this.leftPostList.push(records[i])
+              } else {
+                this.rightPostList.push(records[i])
+              }
             }
-          }
-          this.postList = records
-        }).catch(err => {
-          console.log(err)
-        })
+            this.postList = records
+          })
+        } else {
+          qryPostPage(this.pageReq).then(res => {
+            this.leftPostList = []
+            this.rightPostList = []
+            let records = res.data.records
+            if (records.length <= 0) {
+              this.hasMore = false
+            }
+            for (let i = 0; i < records.length; i++) {
+              if (records[i]['images'] && records[i]['images'].length > 0) {
+                records[i]['images'] = JSON.parse(records[i]['images'])
+              }
+              if (i % 2 === 0) {
+                this.leftPostList.push(records[i])
+              } else {
+                this.rightPostList.push(records[i])
+              }
+            }
+            this.postList = records
+          }).catch(err => {
+            console.log(err)
+          })
+        }
+        
       },
       debounce() {
         // 防抖动
@@ -163,6 +190,10 @@
       },
     },
     onLoad() {
+      this.user = JSON.parse(uni.getStorageSync("user"))
+      
+      this.pageReq.userId = this.user.userId
+      
       qryPostPage(this.pageReq).then(res => {
         let records = res.data.records
         if (records.length <= 0) {
@@ -186,39 +217,68 @@
     },
     onPullDownRefresh() {
       this.pageReq.pageNum = 1
-      qryPostPage(this.pageReq).then(res => {
-        this.leftPostList = []
-        this.rightPostList = []
-        let records = res.data.records
-        if (records.length <= 0) {
-          this.hasMore = false
-        }
-        for (let i = 0; i < records.length; i++) {
-          if (records[i]['images'] && records[i]['images'].length > 0) {
-            records[i]['images'] = JSON.parse(records[i]['images'])
+      if (this.activeIndex === 0) {
+        qryRecommendPost(this.pageReq).then(res => {
+          this.leftPostList = []
+          this.rightPostList = []
+          let records = res.data
+          if (records.length <= 0) {
+            this.hasMore = false
           }
-          if (i % 2 === 0) {
-            this.leftPostList.push(records[i])
-          } else {
-            this.rightPostList.push(records[i])
+          for (let i = 0; i < records.length; i++) {
+            if (records[i]['images'] && records[i]['images'].length > 0) {
+              records[i]['images'] = JSON.parse(records[i]['images'])
+            }
+            if (i % 2 === 0) {
+              this.leftPostList.push(records[i])
+            } else {
+              this.rightPostList.push(records[i])
+            }
           }
-        }
-        this.postList = records
-      }).catch(err => {
-        console.log(err)
-      }).finally(() => {
-        uni.stopPullDownRefresh()
-      })
+          this.postList = records
+        }).catch(() => {
+          uni.stopPullDownRefresh()
+        }).finally(() => {
+          uni.stopPullDownRefresh()
+        })
+      } else {
+        qryPostPage(this.pageReq).then(res => {
+          this.leftPostList = []
+          this.rightPostList = []
+          let records = res.data.records
+          if (records.length <= 0) {
+            this.hasMore = false
+          }
+          for (let i = 0; i < records.length; i++) {
+            if (records[i]['images'] && records[i]['images'].length > 0) {
+              records[i]['images'] = JSON.parse(records[i]['images'])
+            }
+            if (i % 2 === 0) {
+              this.leftPostList.push(records[i])
+            } else {
+              this.rightPostList.push(records[i])
+            }
+          }
+          this.postList = records
+        }).catch(err => {
+          console.log(err)
+          uni.stopPullDownRefresh()
+        }).finally(() => {
+          uni.stopPullDownRefresh()
+        })
+      }
+       
     },
     onReachBottom() {
       if (this.hasMore) {
         this.pageReq.pageNum++
-        this.isLoading = true       
-        qryPostPage(this.pageReq).then(res => {
-          if (res.data.records.length <= 0) {
-            this.hasMore = false
-          } else {
-            let records = res.data.records
+        this.isLoading = true  
+        if (this.activeIndex === 0) {
+          qryRecommendPost(this.pageReq).then(res => {
+            let records = res.data
+            if (records.length <= 0) {
+              this.hasMore = false
+            }
             for (let i = 0; i < records.length; i++) {
               if (records[i]['images'] && records[i]['images'].length > 0) {
                 records[i]['images'] = JSON.parse(records[i]['images'])
@@ -229,13 +289,36 @@
                 this.rightPostList.push(records[i])
               }
             }
-          }
-          
-        }).catch(err => {
-          this.pageReq.pageNum--
-        }).finally(() => {
-          this.isLoading = false
-        })
+            this.postList = records
+          }).catch(err => {
+            this.pageReq.pageNum--
+          }).finally(() => {
+            this.isLoading = false
+          })
+        } else {
+          qryPostPage(this.pageReq).then(res => {
+            if (res.data.records.length <= 0) {
+              this.hasMore = false
+            } else {
+              let records = res.data.records
+              for (let i = 0; i < records.length; i++) {
+                if (records[i]['images'] && records[i]['images'].length > 0) {
+                  records[i]['images'] = JSON.parse(records[i]['images'])
+                }
+                if (i % 2 === 0) {
+                  this.leftPostList.push(records[i])
+                } else {
+                  this.rightPostList.push(records[i])
+                }
+              }
+            }
+            
+          }).catch(err => {
+            this.pageReq.pageNum--
+          }).finally(() => {
+            this.isLoading = false
+          })
+        }
       }
     },
   }
@@ -251,7 +334,16 @@
       background-color: #fff;
       z-index: 10000;
       .search {
+        position: relative;
         width: 750rpx;
+        .mask {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10;
+        }
       }
       // 分类区域
       .maskArea {
@@ -292,7 +384,7 @@
       .itemBox {
         width: 330rpx;
         min-width: 330rpx;
-        margin: 20rpx 20rpx;
+        margin: 20rpx 20rpx 0 20rpx;
         border-radius: 20rpx;
         overflow: hidden;
         box-shadow: #b7b7b7 0 0 10px;
@@ -347,7 +439,9 @@
       }
     }
     
-    .bottom {
+    .bottomBox {
+      margin-top: 20rpx;
+      margin-bottom: 50rpx;
       text-align: center;
       .loading {
         width: 50rpx;

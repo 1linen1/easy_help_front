@@ -53,6 +53,13 @@
       </view>
     </view>
     
+    <view class="bottomBox" v-if="this.isLoading">
+        <image class="loading" src="../../static/images/rank/loading.png"></image>
+    </view>
+    <view class="bottomBox" v-if="!this.isLoading && !this.hasMore">
+        <view style="color: #b2a796;">没有更多数据了~~</view>
+    </view>
+    
   </view>
 </template>
 
@@ -114,6 +121,8 @@
         
         this.pageReq.pageNum = 1
         this.pageReq.content = res.value
+        this.leftPostList = []
+        this.rightPostList = []
         qryPostPageByContent(this.pageReq).then(res => {
           let records = res.data.records
           if (records.length <= 0) {
@@ -269,7 +278,7 @@
       }
     }
     
-    .bottom {
+    .bottomBox {
       text-align: center;
       .loading {
         width: 50rpx;

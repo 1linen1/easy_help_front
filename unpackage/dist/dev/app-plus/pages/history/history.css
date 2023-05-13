@@ -1,0 +1,66 @@
+.container {
+  padding: 0.3125rem 0.625rem;
+}
+.container .itemBox {
+  border-bottom: #cfcfcf 1px solid;
+  padding-bottom: 0.3125rem;
+  margin: 0.3125rem 0;
+}
+.container .itemBox .topBox {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: wrap;
+  font-size: 1.09375rem;
+  padding: 0.0625rem 0.0625rem 0 0.15625rem;
+}
+.container .itemBox .bottomBox {
+  display: flex;
+  padding: 0.3125rem 0;
+  justify-content: space-between;
+}
+.container .itemBox .bottomBox .left {
+  display: flex;
+  align-items: center;
+}
+.container .itemBox .bottomBox .left .avatar {
+  width: 2.1875rem;
+  height: 2.1875rem;
+  border-radius: 50%;
+  margin-right: 0.3125rem;
+}
+.container .itemBox .bottomBox .left .nickname {
+  font-size: 0.9375rem;
+}
+.container .itemBox .bottomBox .right {
+  display: flex;
+  font-size: 0.625rem;
+  color: #a8a8a8;
+  align-items: flex-end;
+  padding-bottom: 0.25rem;
+}
+.container .itemBox .bottomBox .helpRightBox {
+  display: flex;
+}
+.container .itemBox .bottomBox .helpRightBox .text {
+  color: #747474;
+}
+.container .itemBox .bottomBox .helpRightBox .scores {
+  color: #50964f;
+}
+.container .itemBox .bottomBox .helpFailBox .text {
+  color: #989a1d;
+}
+.container .itemBox .bottomBox .helpUBox .text {
+  color: #1f8194;
+}
+.container .bottom {
+  text-align: center;
+}
+.container .bottom .loading {
+  width: 1.5625rem;
+  height: 1.5625rem;
+}

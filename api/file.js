@@ -6,7 +6,8 @@ export function fileUpload({tempFiles, tempFilePaths}, fileList, userId  = 0, pr
     return new Promise((resolve, reject) => {
       tempFiles.forEach(async (item) => {
         await uni.uploadFile({
-          url: "http://127.0.0.1:8888/api/file/upload",
+          // url: "http://127.0.0.1:8888/api/file/upload",
+          url: "http://192.168.43.228:8888/api/file/upload",
           formData: {
             name: item.name,
             file: item.file,

@@ -302,7 +302,10 @@
         }
       })
       
-      addPostViews(this.info.postId)
+      addPostViews({
+        postId: this.info.postId,
+        userId: this.info.userId
+      })
       addHistory({
         userId: this.user.userId,
         postId: this.info.postId

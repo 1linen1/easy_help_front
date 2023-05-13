@@ -47,8 +47,9 @@ export default class websocketUtil {
 		// 这里仅是事件监听【如果socket关闭了会执行】
 		this.socketTask.onClose(() => {
 			console.log("已经被关闭了")
-			this.is_open_socket = false;
-			this.reconnect();
+      if (this.is_open_socket == true) {
+        this.reconnect();
+      }
 		})
 	}
 	

@@ -1,5 +1,5 @@
-const baseUrl = "http://127.0.0.1:8888/api"
-// const baseUrl = "http://110.41.146.56:8888/api"
+// const baseUrl = "http://127.0.0.1:8888/api"
+const baseUrl = "http://192.168.43.228:8888/api"
 
 let showLoading = true
 

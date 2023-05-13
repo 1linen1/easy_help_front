@@ -38,7 +38,7 @@
         <view class="scoreIcon iconfont icon-jifen"></view>
         <view class="title">附加积分</view>
       </view>
-      <uni-number-box :min="0" :max="this.max" @change="changeScore"></uni-number-box>
+      <uni-number-box v-model="this.defaultNum" :min="0" :max="this.max" @change="changeScore"></uni-number-box>
     </view>
     <view class="tip" @click="" v-if="this.type === '0'">温馨提示：您当前拥有{{this.max}}积分</view>
   </view>
@@ -51,6 +51,7 @@
   export default {
     data() {
       return {
+        defaultNum: 0,
         fileList: [],
         extList: [],
         selectedTag: 0,

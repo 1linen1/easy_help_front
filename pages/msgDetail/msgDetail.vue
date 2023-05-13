@@ -90,7 +90,7 @@
       this.user = JSON.parse(uni.getStorageSync("user"))
       this.msgUser = JSON.parse(option.user)
       
-      if (!this.$websocket) {
+      if (!this.$websocket || (this.$websocket && !this.$websocket.is_open_socket)) {
         console.log("连接前状态：", this.$websocket)
         this.$setWebsocket(this.user.userId)
         console.log("连接后状态：", this.$websocket)
@@ -164,13 +164,13 @@
           display: flex;
         }
         .left {
-          justify-content: start;
+          justify-content: flex-start;
           .content {
             margin-left: 10rpx;
           }
         }
         .right {
-          justify-content: end;
+          justify-content: flex-end;
           .content {
             margin-right: 10rpx;
           }

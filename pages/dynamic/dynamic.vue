@@ -78,6 +78,8 @@
         if (res.data.records.length < 10) {
           this.hasMore = false
         }
+      }).catch(() => {
+        uni.stopPullDownRefresh()
       }).finally(() => {
         uni.stopPullDownRefresh()
       })

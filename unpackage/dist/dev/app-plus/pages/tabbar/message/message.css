@@ -1,0 +1,53 @@
+.container {
+  padding: 0.625rem 0.3125rem;
+}
+.container .itemBox {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  padding: 0.3125rem;
+  margin-bottom: 0.625rem;
+}
+.container .itemBox .left {
+  display: flex;
+  flex-direction: row;
+}
+.container .itemBox .left .img {
+  width: 2.1875rem;
+  height: 2.1875rem;
+  border-radius: 50%;
+}
+.container .itemBox .right {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 0.3125rem;
+  padding-bottom: 0.3125rem;
+  border-bottom: 1px solid #c3c3c3;
+}
+.container .itemBox .right .box {
+  display: flex;
+  flex-direction: column;
+}
+.container .itemBox .right .box .nickname {
+  font-weight: bold;
+}
+.container .itemBox .right .box .content {
+  width: 14.0625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.46875rem;
+  color: #c3c3c3;
+}
+.container .itemBox .right .time {
+  position: absolute;
+  right: 0.625rem;
+  top: 1.25rem;
+  font-size: 0.53125rem;
+}
+.container .hr {
+  padding: 0.3125rem;
+  background-color: #eeeeee;
+}
