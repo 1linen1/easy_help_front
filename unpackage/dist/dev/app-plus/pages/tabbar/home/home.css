@@ -631,6 +631,7 @@
 .container .fixed .maskArea .typeArea {
   display: flex;
   width: 100%;
+  flex-wrap: nowrap;
   white-space: nowrap;
   overflow: auto;
   padding: 0.625rem 0.625rem;
@@ -647,6 +648,9 @@
   background-color: #d4feff;
   font-weight: 600;
   color: #5895e5;
+}
+.container .fixed .maskArea .typeArea .item:last-child .tag {
+  margin-right: 2.1875rem;
 }
 .container .postContainer {
   display: flex;
@@ -696,7 +700,7 @@
   margin: 0.3125rem;
 }
 .container .postContainer .itemBox .bottom .person .name {
-  font-size: 0.375rem;
+  font-size: 0.625rem;
   color: #999999;
 }
 .container .postContainer .itemBox .bottom .view {

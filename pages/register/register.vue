@@ -65,7 +65,7 @@
               {
                 minLength: 5,
                 maxLength: 15,
-                errorMessage: '密码长度要在~15位'
+                errorMessage: '密码长度要在6~15位'
               }
             ]
           },
@@ -80,7 +80,7 @@
                   console.log(value)
                   console.log(data)
                   if (value != data.password) {
-                    callback('密码与原密码不一致')
+                    callback('密码与确认密码不一致')
                   }
                   return true
                 }

@@ -1,5 +1,5 @@
-// const baseUrl = "http://127.0.0.1:8888/api"
-const baseUrl = "http://192.168.43.228:8888/api"
+// const baseUrl = "http://192.168.43.228:8888/api"
+const baseUrl = "http://110.41.146.56:8888/api"
 
 let showLoading = true
 
@@ -50,7 +50,7 @@ export const request = (path, method = 'GET', data = {}, isShowLoading = true) =
       fail: (err) => {
         console.log("请求失败err:", err)
         uni.showToast({
-          title: !err.msg ? "请求失败!请稍后再试" : err.msg,
+          title: !err.msg ? "请稍后再试!" : err.msg,
           icon: "error"
         })
         reject(err)

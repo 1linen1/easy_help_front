@@ -80,3 +80,8 @@ export function qryDynamicPage(data) {
 export function qryRecommendPost(data) {
   return request("/post/qryRecommendPost", "POST", data)
 }
+
+// 删除帖子
+export function updatePost(data) {
+  return request("/post/updatePost", "POST", data)
+}

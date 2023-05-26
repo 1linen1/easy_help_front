@@ -33,17 +33,10 @@
             "buttons": [
               {
                 "text": "退出",
-                "fontSize": "11",
+                "fontSize": "14",
                 "float": "right",
                 "color": "#3d83a8",
                 "fontWeight": "bold"
-              },
-              {
-                "text": "&#xe60b;",
-                "fontSrc": "./static/iconfont/iconfont.ttf",
-                "fontSize": "21",
-                "float": "right",
-                "color": "#3d83a8"
               }
             ]
           }
@@ -137,7 +130,7 @@
           "titleNView": {
             "buttons": [
               {
-                "text": "发布动态",
+                "text": "发布",
                 "fontSize": "14",
                 "float": "right",
                 "color": "#3d83a8",
@@ -173,6 +166,14 @@
       }
     },
     {
+      "path" : "pages/warning/warning",
+      "style" :                                                                                    
+      {
+        "navigationBarTitleText": "举报结果",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path" : "pages/post/post",
       "style" :                                                                                    
       {
@@ -183,17 +184,10 @@
             "buttons": [
               {
                 "text": "发布",
-                "fontSize": "11",
+                "fontSize": "14",
                 "float": "right",
                 "color": "#3d83a8",
                 "fontWeight": "bold"
-              },
-              {
-                "text": "\ue60b",
-                "fontSrc": "/static/iconfont/iconfont.ttf",
-                "fontSize": "21",
-                "float": "right",
-                "color": "#3d83a8"
               }
             ]
           }

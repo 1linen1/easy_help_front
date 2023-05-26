@@ -26,7 +26,7 @@
         pattern: "^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$",
         formData: {
           username: '2696839754@qq.com',
-          password: 'admin'
+          password: 'admin',
         },
         btnStyleObj: {
           color: "#acacac",

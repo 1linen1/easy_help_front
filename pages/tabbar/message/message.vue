@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="topContainer">
+    <!-- <view class="topContainer">
       <view class="itemBox">
         <view class="left">
           <image class="img" src="../../../static/images/message/sysMsg.png"></image>
@@ -13,7 +13,7 @@
           <view class="time">05-02 17:43</view>
         </view>
       </view>
-    </view>
+    </view> -->
     
     <view class="hr"></view>
     

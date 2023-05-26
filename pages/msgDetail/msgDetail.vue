@@ -8,7 +8,7 @@
             <image class="avatar" :src="this.msgUser.avatar"></image>
             <view style="background-color: #f8f9f9;" class="content">{{item.content}}</view>
           </view>
-          <view class="right" v-else>
+          <view class="right"  @longpress="deleteMessage(item)" v-else>
             <view style="background-color: aliceblue;" class="content">{{item.content}}</view>
             <image class="avatar" :src="this.user.avatar"></image>
           </view>
@@ -25,7 +25,7 @@
 
 <script>
   import ws from "../../api/websocket.js"
-  import {qryMessagePage} from "../../api/message.js"
+  import {qryMessagePage, deleteMsg} from "../../api/message.js"
   export default {
     data() {
       return {
@@ -45,6 +45,24 @@
       }
     },
     methods: {
+      deleteMessage(item) {
+        uni.showModal({
+          title: "您确定要删除吗?",
+          success:  (res) => {
+            if (res.confirm) {
+              deleteMsg(item.messageId).then(res => {
+                uni.showToast({
+                  title: res.msg,
+                  icon: 'success'
+                })
+                this.msgList = this.msgList.filter(msg => msg.messageId != item.messageId)
+              })
+            } else if (res.cancel) {
+              console.log('用户点击取消');
+            }
+          }
+        })
+      },
       refresh() {
         console.log(this.refreshFlag)
         this.refreshFlag = true

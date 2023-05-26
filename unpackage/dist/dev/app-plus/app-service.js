@@ -1274,7 +1274,7 @@ if (uni.restoreGlobal) {
       onClick: _cache[0] || (_cache[0] = (...args) => $options._onClick && $options._onClick(...args))
     }, null, 6);
   }
-  const __easycom_1$2 = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
+  const __easycom_0$3 = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
   const isObject = (val) => val !== null && typeof val === "object";
   const defaultDelimiters = ["{", "}"];
   class BaseFormatter {
@@ -1714,7 +1714,7 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", { class: "uni-searchbar" }, [
       vue.createElementVNode("view", {
         style: vue.normalizeStyle({ borderRadius: $props.radius + "px", backgroundColor: $props.bgColor }),
@@ -1771,7 +1771,7 @@ if (uni.restoreGlobal) {
     ]);
   }
   const __easycom_0$2 = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-f07ef577"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-search-bar/components/uni-search-bar/uni-search-bar.vue"]]);
-  const baseUrl = "http://192.168.43.228:8888/api";
+  const baseUrl = "http://110.41.146.56:8888/api";
   const request = (path, method = "GET", data = {}, isShowLoading = true) => {
     if (isShowLoading) {
       uni.showLoading({
@@ -1817,7 +1817,7 @@ if (uni.restoreGlobal) {
         fail: (err) => {
           formatAppLog("log", "at api/request.js:51", "\u8BF7\u6C42\u5931\u8D25err:", err);
           uni.showToast({
-            title: !err.msg ? "\u8BF7\u6C42\u5931\u8D25!\u8BF7\u7A0D\u540E\u518D\u8BD5" : err.msg,
+            title: !err.msg ? "\u8BF7\u7A0D\u540E\u518D\u8BD5!" : err.msg,
             icon: "error"
           });
           reject(err);
@@ -1877,6 +1877,9 @@ if (uni.restoreGlobal) {
   }
   function qryRecommendPost(data) {
     return request("/post/qryRecommendPost", "POST", data);
+  }
+  function updatePost(data) {
+    return request("/post/updatePost", "POST", data);
   }
   const _sfc_main$p = {
     data() {
@@ -1998,7 +2001,18 @@ if (uni.restoreGlobal) {
       }
     },
     onLoad() {
-      this.user = JSON.parse(uni.getStorageSync("user"));
+      let user = uni.getStorageSync("user");
+      if (!user) {
+        uni.showToast({
+          title: "\u8BF7\u5148\u767B\u5F55!",
+          icon: "none"
+        });
+        uni.reLaunch({
+          url: "/pages/login/login"
+        });
+        return;
+      }
+      this.user = JSON.parse(user);
       this.pageReq.userId = this.user.userId;
       qryPostPage(this.pageReq).then((res) => {
         let records = res.data.records;
@@ -2017,7 +2031,7 @@ if (uni.restoreGlobal) {
         }
         this.postList = records;
       }).catch((err) => {
-        formatAppLog("log", "at pages/tabbar/home/home.vue:214", err);
+        formatAppLog("log", "at pages/tabbar/home/home.vue:225", err);
       });
     },
     onPullDownRefresh() {
@@ -2066,7 +2080,7 @@ if (uni.restoreGlobal) {
           }
           this.postList = records;
         }).catch((err) => {
-          formatAppLog("log", "at pages/tabbar/home/home.vue:264", err);
+          formatAppLog("log", "at pages/tabbar/home/home.vue:275", err);
           uni.stopPullDownRefresh();
         }).finally(() => {
           uni.stopPullDownRefresh();
@@ -2127,7 +2141,7 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_search_bar = resolveEasycom(vue.resolveDynamicComponent("uni-search-bar"), __easycom_0$2);
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "fixed" }, [
         vue.createCommentVNode(" \u5934\u90E8\u641C\u7D22 "),
@@ -2164,7 +2178,7 @@ if (uni.restoreGlobal) {
               class: "itemBox",
               onClick: ($event) => $options.toDetail(item)
             }, [
-              item.images ? (vue.openBlock(), vue.createElementBlock("view", {
+              item.images && item.images.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
                 key: 0,
                 class: "imgBox"
               }, [
@@ -2197,18 +2211,19 @@ if (uni.restoreGlobal) {
         ]),
         vue.createElementVNode("view", { class: "right" }, [
           (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(this.rightPostList, (item) => {
+            var _a;
             return vue.openBlock(), vue.createElementBlock("view", {
               class: "itemBox",
               onClick: ($event) => $options.toDetail(item)
             }, [
-              item.images ? (vue.openBlock(), vue.createElementBlock("view", {
+              item.images && item.images.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
                 key: 0,
                 class: "imgBox"
               }, [
                 vue.createElementVNode("image", {
                   class: "img",
                   mode: "widthFix",
-                  src: item.images ? item.images[0].url : ""
+                  src: item.images ? (_a = item.images[0]) == null ? void 0 : _a.url : ""
                 }, null, 8, ["src"])
               ])) : vue.createCommentVNode("v-if", true),
               vue.createElementVNode("text", { class: "profile" }, vue.toDisplayString(item.content), 1),
@@ -2282,17 +2297,10 @@ if (uni.restoreGlobal) {
             buttons: [
               {
                 text: "\u9000\u51FA",
-                fontSize: "11",
+                fontSize: "14",
                 float: "right",
                 color: "#3d83a8",
                 fontWeight: "bold"
-              },
-              {
-                text: "&#xe60b;",
-                fontSrc: "./static/iconfont/iconfont.ttf",
-                fontSize: "21",
-                float: "right",
-                color: "#3d83a8"
               }
             ]
           }
@@ -2377,7 +2385,7 @@ if (uni.restoreGlobal) {
           titleNView: {
             buttons: [
               {
-                text: "\u53D1\u5E03\u52A8\u6001",
+                text: "\u53D1\u5E03",
                 fontSize: "14",
                 float: "right",
                 color: "#3d83a8",
@@ -2410,6 +2418,13 @@ if (uni.restoreGlobal) {
       }
     },
     {
+      path: "pages/warning/warning",
+      style: {
+        navigationBarTitleText: "\u4E3E\u62A5\u7ED3\u679C",
+        enablePullDownRefresh: false
+      }
+    },
+    {
       path: "pages/post/post",
       style: {
         navigationBarTitleText: "\u53D1\u5E16",
@@ -2419,17 +2434,10 @@ if (uni.restoreGlobal) {
             buttons: [
               {
                 text: "\u53D1\u5E03",
-                fontSize: "11",
+                fontSize: "14",
                 float: "right",
                 color: "#3d83a8",
                 fontWeight: "bold"
-              },
-              {
-                text: "\uE60B",
-                fontSrc: "/static/iconfont/iconfont.ttf",
-                fontSize: "21",
-                float: "right",
-                color: "#3d83a8"
               }
             ]
           }
@@ -6339,7 +6347,7 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", {
       class: vue.normalizeClass(["uni-easyinput", { "uni-easyinput-error": $options.msg }]),
       style: vue.normalizeStyle($options.boxStyle)
@@ -6440,6 +6448,9 @@ if (uni.restoreGlobal) {
   function addWarning(data) {
     return request("/warning/addWarning", "POST", data);
   }
+  function qryMyWarning(data) {
+    return request("/warning/qryMyWarning", "POST", data);
+  }
   function isFollow(userId) {
     return request("/follows/isFollow/" + userId, "GET");
   }
@@ -6474,6 +6485,41 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      reportPost() {
+        if (this.info.userId === this.user.userId) {
+          return;
+        }
+        uni.showActionSheet({
+          itemList: ["\u4E3E\u62A5\u5E16\u5B50"],
+          success: (res) => {
+            uni.showModal({
+              title: "\u60A8\u786E\u5B9A\u4E3E\u62A5\u5417?",
+              success: (res2) => {
+                if (res2.confirm) {
+                  addWarning({
+                    positiveUserId: this.user.userId,
+                    passiveUserId: this.info.userId,
+                    commentPostId: this.info.postId,
+                    type: "1"
+                  }).then((res3) => {
+                    uni.showToast({
+                      title: res3.msg,
+                      icon: "success"
+                    });
+                  }).catch((err) => {
+                    uni.showToast({
+                      title: "\u8BF7\u52FF\u91CD\u590D\u4E3E\u62A5!",
+                      icon: "none"
+                    });
+                  });
+                } else if (res2.cancel) {
+                  formatAppLog("log", "at pages/detail/detail.vue:158", "\u7528\u6237\u70B9\u51FB\u53D6\u6D882");
+                }
+              }
+            });
+          }
+        });
+      },
       toAssignScores() {
         uni.navigateTo({
           url: "/pages/scoresAssgin/scoresAssgin?postId=" + this.info.postId + "&userId=" + this.info.userId
@@ -6505,7 +6551,7 @@ if (uni.restoreGlobal) {
               uni.navigateTo({
                 url: "/pages/userHome/userHome?userId=" + this.info.userId
               });
-              formatAppLog("log", "at pages/detail/detail.vue:158", "\u524D\u5F80\u4E3B\u9875...");
+              formatAppLog("log", "at pages/detail/detail.vue:196", "\u524D\u5F80\u4E3B\u9875...");
             } else if (res.tapIndex === 1) {
               let user = {
                 userId: this.info.userId,
@@ -6525,7 +6571,7 @@ if (uni.restoreGlobal) {
             userId: this.info.userId,
             followId: this.user.userId
           }).then((res) => {
-            formatAppLog("log", "at pages/detail/detail.vue:179", res);
+            formatAppLog("log", "at pages/detail/detail.vue:217", res);
             this.isFollow = true;
             this.user.concerns++;
             uni.setStorageSync("user", JSON.stringify(this.user));
@@ -6535,7 +6581,7 @@ if (uni.restoreGlobal) {
             userId: this.info.userId,
             followId: this.user.userId
           }).then((res) => {
-            formatAppLog("log", "at pages/detail/detail.vue:189", res);
+            formatAppLog("log", "at pages/detail/detail.vue:227", res);
             this.isFollow = false;
             this.user.concerns--;
             uni.setStorageSync("user", JSON.stringify(this.user));
@@ -6592,7 +6638,7 @@ if (uni.restoreGlobal) {
                       this.commentList = this.commentList.filter((comment) => comment.commentId != item.commentId);
                     });
                   } else if (res2.cancel) {
-                    formatAppLog("log", "at pages/detail/detail.vue:246", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
+                    formatAppLog("log", "at pages/detail/detail.vue:284", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
                   }
                 }
               });
@@ -6611,9 +6657,19 @@ if (uni.restoreGlobal) {
                       passiveUserId: item.userId,
                       commentPostId: item.commentId,
                       type: "0"
+                    }).then((res3) => {
+                      uni.showToast({
+                        title: res3.msg,
+                        icon: "success"
+                      });
+                    }).catch((err) => {
+                      uni.showToast({
+                        title: "\u8BF7\u52FF\u91CD\u590D\u4E3E\u62A5!",
+                        icon: "none"
+                      });
                     });
                   } else if (res2.cancel) {
-                    formatAppLog("log", "at pages/detail/detail.vue:267", "\u7528\u6237\u70B9\u51FB\u53D6\u6D882");
+                    formatAppLog("log", "at pages/detail/detail.vue:315", "\u7528\u6237\u70B9\u51FB\u53D6\u6D882");
                   }
                 }
               });
@@ -6631,7 +6687,7 @@ if (uni.restoreGlobal) {
         this.type = "dynamic";
       }
       this.info = JSON.parse(option.info);
-      formatAppLog("log", "at pages/detail/detail.vue:287", "\u6570\u636E:", this.info);
+      formatAppLog("log", "at pages/detail/detail.vue:335", "\u6570\u636E:", this.info);
       this.user = JSON.parse(uni.getStorageSync("user"));
       this.pageReq.postId = this.info.postId;
       qryPostCommentPage(this.pageReq).then((res) => {
@@ -6689,7 +6745,7 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     const _component_uni_file_picker = resolveEasycom(vue.resolveDynamicComponent("uni-file-picker"), __easycom_0$1);
     const _component_uni_easyinput = resolveEasycom(vue.resolveDynamicComponent("uni-easyinput"), __easycom_0);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
@@ -6737,7 +6793,10 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("view", { class: "resolve" }, " \u5DF2\u89E3\u51B3 ")
         ])) : vue.createCommentVNode("v-if", true)
       ]),
-      vue.createElementVNode("view", { class: "middle" }, [
+      vue.createElementVNode("view", {
+        class: "middle",
+        onLongpress: _cache[6] || (_cache[6] = (...args) => $options.reportPost && $options.reportPost(...args))
+      }, [
         vue.createElementVNode("textarea", {
           class: "content",
           value: this.info.content,
@@ -6772,13 +6831,19 @@ if (uni.restoreGlobal) {
             }))
           ])
         ])) : vue.createCommentVNode("v-if", true)
-      ]),
+      ], 32),
       vue.createElementVNode("view", { class: "hr" }),
       vue.createElementVNode("view", { class: "bottom" }, [
         vue.createElementVNode("view", {
           class: "title",
-          style: { "color": "#343434", "font-weight": "700" }
-        }, "\u6211\u8981\u5E2E\u52A9"),
+          style: { "color": "#343434", "font-weight": "700", "display": "flex", "justify-content": "space-between" }
+        }, [
+          vue.createElementVNode("view", { class: "help" }, "\u6211\u8981\u5E2E\u52A9"),
+          vue.createElementVNode("view", {
+            class: "scores",
+            style: { "color": "#ccc", "font-size": "15px", "margin-right": "15px" }
+          }, "\u5F53\u524D\u5E16\u5B50\u62E5\u6709\u9644\u52A0\u79EF\u5206: " + vue.toDisplayString(this.info.scores), 1)
+        ]),
         vue.createElementVNode("view", { class: "inputArea" }, [
           vue.createElementVNode("image", {
             class: "avatar",
@@ -6789,7 +6854,7 @@ if (uni.restoreGlobal) {
               disabled: !this.info.resolved || this.info.resolved != "00U",
               class: "info",
               modelValue: this.comment,
-              "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => this.comment = $event),
+              "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => this.comment = $event),
               type: "textarea",
               autoHeight: true,
               confirmType: "send",
@@ -6874,7 +6939,7 @@ if (uni.restoreGlobal) {
     return new Promise((resolve, reject) => {
       tempFiles.forEach(async (item) => {
         await uni.uploadFile({
-          url: "http://192.168.43.228:8888/api/file/upload",
+          url: "http://110.41.146.56:8888/api/file/upload",
           formData: {
             name: item.name,
             file: item.file,
@@ -6940,6 +7005,11 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      toWarning() {
+        uni.navigateTo({
+          url: "/pages/warning/warning"
+        });
+      },
       toDynamic() {
         uni.navigateTo({
           url: "/pages/dynamic/dynamic"
@@ -6967,11 +7037,11 @@ if (uni.restoreGlobal) {
           placeholderText: "\u8BF7\u8F93\u51651~6\u4E2A\u5B57\u7B26",
           success: (res) => {
             if (res.confirm) {
-              formatAppLog("log", "at pages/tabbar/personal/personal.vue:137", this.user);
-              formatAppLog("log", "at pages/tabbar/personal/personal.vue:138", res.content);
+              formatAppLog("log", "at pages/tabbar/personal/personal.vue:142", this.user);
+              formatAppLog("log", "at pages/tabbar/personal/personal.vue:143", res.content);
               let content = res.content.trim();
               if (/^[\u4E00-\u9FA5A-Za-z0-9_]{1,6}$/.test(content)) {
-                formatAppLog("log", "at pages/tabbar/personal/personal.vue:141", "\u6B63\u5219\u5339\u914D\u6210\u529F!", content);
+                formatAppLog("log", "at pages/tabbar/personal/personal.vue:146", "\u6B63\u5219\u5339\u914D\u6210\u529F!", content);
                 updateNickname({
                   userId: this.user.userId,
                   nickname: content
@@ -6990,13 +7060,13 @@ if (uni.restoreGlobal) {
                 });
               }
             } else if (res.cancel) {
-              formatAppLog("log", "at pages/tabbar/personal/personal.vue:161", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
+              formatAppLog("log", "at pages/tabbar/personal/personal.vue:166", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
             }
           }
         });
       },
       select: async function(e) {
-        formatAppLog("log", "at pages/tabbar/personal/personal.vue:167", "\u9009\u62E9\u4E86\u6587\u4EF6:", e);
+        formatAppLog("log", "at pages/tabbar/personal/personal.vue:172", "\u9009\u62E9\u4E86\u6587\u4EF6:", e);
         if (e.tempFiles[0]["size"] > 3145728) {
           uni.showToast({
             title: "\u4E0A\u4F20\u56FE\u7247\u5927\u5C0F\u4E0D\u80FD\u5927\u4E8E3M",
@@ -7038,12 +7108,12 @@ if (uni.restoreGlobal) {
               name: "avatar.png"
             }
           ];
-          formatAppLog("log", "at pages/tabbar/personal/personal.vue:209", "fileList\uFF1A", this.fileList);
+          formatAppLog("log", "at pages/tabbar/personal/personal.vue:214", "fileList\uFF1A", this.fileList);
         }
       }
     },
     onNavigationBarButtonTap() {
-      formatAppLog("log", "at pages/tabbar/personal/personal.vue:214", this.websocket);
+      formatAppLog("log", "at pages/tabbar/personal/personal.vue:219", this.websocket);
       uni.showModal({
         title: "\u6E29\u99A8\u63D0\u793A",
         content: "\u60A8\u786E\u5B9A\u8981\u9000\u51FA\u5417?",
@@ -7066,7 +7136,7 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_file_picker = resolveEasycom(vue.resolveDynamicComponent("uni-file-picker"), __easycom_0$1);
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createCommentVNode(" \u9996\u90E8 "),
       vue.createElementVNode("view", { class: "top" }, [
@@ -7176,7 +7246,10 @@ if (uni.restoreGlobal) {
       ]),
       vue.createCommentVNode(" \u5E95\u90E8 "),
       vue.createElementVNode("view", { class: "bottom" }, [
-        vue.createElementVNode("view", { class: "item" }, [
+        vue.createElementVNode("view", {
+          class: "item",
+          onClick: _cache[9] || (_cache[9] = (...args) => $options.toWarning && $options.toWarning(...args))
+        }, [
           vue.createElementVNode("view", { class: "left" }, [
             vue.createElementVNode("image", {
               class: "warning",
@@ -7323,23 +7396,7 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
-      vue.createElementVNode("view", { class: "topContainer" }, [
-        vue.createElementVNode("view", { class: "itemBox" }, [
-          vue.createElementVNode("view", { class: "left" }, [
-            vue.createElementVNode("image", {
-              class: "img",
-              src: "/static/images/message/sysMsg.png"
-            })
-          ]),
-          vue.createElementVNode("view", { class: "right" }, [
-            vue.createElementVNode("view", { class: "box" }, [
-              vue.createElementVNode("view", { class: "nickname" }, "\u7CFB\u7EDF\u6D88\u606F"),
-              vue.createElementVNode("view", { class: "content" }, "\u5185\u5BB9\u3002\u3002\u3002\u4E00\u4E9B\u518545665555555555555555555555555555555555555555555555")
-            ]),
-            vue.createElementVNode("view", { class: "time" }, "05-02 17:43")
-          ])
-        ])
-      ]),
+      vue.createCommentVNode(' <view class="topContainer">\r\n      <view class="itemBox">\r\n        <view class="left">\r\n          <image class="img" src="../../../static/images/message/sysMsg.png"></image>\r\n        </view>\r\n        <view class="right">\r\n          <view class="box">\r\n            <view class="nickname">\u7CFB\u7EDF\u6D88\u606F</view>\r\n            <view class="content">\u5185\u5BB9\u3002\u3002\u3002\u4E00\u4E9B\u518545665555555555555555555555555555555555555555555555</view>\r\n          </view>\r\n          <view class="time">05-02 17:43</view>\r\n        </view>\r\n      </view>\r\n    </view> '),
       vue.createElementVNode("view", { class: "hr" }),
       vue.createElementVNode("view", { class: "bottomContainer" }, [
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.chatUserList, (item) => {
@@ -7381,13 +7438,19 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      toDetail(userId) {
+        formatAppLog("log", "at pages/follows/follows.vue:40", "123");
+        uni.navigateTo({
+          url: "/pages/userHome/userHome?userId=" + userId
+        });
+      },
       toFollow(flag, userId, index) {
         if (flag) {
           addFollow({
             userId,
             followId: this.user.userId
           }).then((res) => {
-            formatAppLog("log", "at pages/follows/follows.vue:45", res);
+            formatAppLog("log", "at pages/follows/follows.vue:51", res);
             this.userList[index]["isFollow"] = true;
             this.user.concerns++;
             uni.setStorageSync("user", JSON.stringify(this.user));
@@ -7397,7 +7460,7 @@ if (uni.restoreGlobal) {
             userId,
             followId: this.user.userId
           }).then((res) => {
-            formatAppLog("log", "at pages/follows/follows.vue:55", res);
+            formatAppLog("log", "at pages/follows/follows.vue:61", res);
             this.userList[index]["isFollow"] = false;
             this.user.concerns--;
             uni.setStorageSync("user", JSON.stringify(this.user));
@@ -7430,7 +7493,10 @@ if (uni.restoreGlobal) {
           class: "itemBox",
           key: item.userId
         }, [
-          vue.createElementVNode("view", { class: "left" }, [
+          vue.createElementVNode("view", {
+            class: "left",
+            onClick: ($event) => $options.toDetail(item.userId)
+          }, [
             vue.createElementVNode("image", {
               class: "avatar",
               src: item.avatar
@@ -7439,7 +7505,7 @@ if (uni.restoreGlobal) {
               vue.createElementVNode("view", { class: "nickname" }, vue.toDisplayString(item.nickname), 1),
               vue.createElementVNode("view", { class: "follows" }, "\u7C89\u4E1D\u6570:" + vue.toDisplayString(item.follows), 1)
             ])
-          ]),
+          ], 8, ["onClick"]),
           vue.createElementVNode("view", { class: "right" }, [
             vue.withDirectives(vue.createElementVNode("view", {
               class: "cancel",
@@ -7483,17 +7549,27 @@ if (uni.restoreGlobal) {
           itemList: ["\u7533\u8BC9"],
           success: (res) => {
             uni.showModal({
-              title: "\u60A8\u786E\u5B9A\u4E3E\u62A5\u8BE5\u8BC4\u8BBA\u5417?",
+              title: "\u60A8\u786E\u5B9A\u7533\u8BC9\u5417?",
               success: (res2) => {
                 if (res2.confirm) {
                   addWarning({
                     positiveUserId: this.user.userId,
                     passiveUserId: item.userId,
-                    commentPostId: item.commentId,
+                    commentPostId: item.postId,
                     type: "3"
+                  }).then((res3) => {
+                    uni.showToast({
+                      title: "\u8BF7\u7B49\u5F85\u5BA1\u6838!",
+                      icon: "success"
+                    });
+                  }).catch((err) => {
+                    uni.showToast({
+                      title: "\u8BF7\u52FF\u91CD\u590D\u7533\u8BC9!",
+                      icon: "none"
+                    });
                   });
                 } else if (res2.cancel) {
-                  formatAppLog("log", "at pages/history/history.vue:75", "\u7528\u6237\u70B9\u51FB\u53D6\u6D882");
+                  formatAppLog("log", "at pages/history/history.vue:85", "\u7528\u6237\u70B9\u51FB\u53D6\u6D882");
                 }
               }
             });
@@ -7513,7 +7589,7 @@ if (uni.restoreGlobal) {
       this.type = option.type;
       this.user = JSON.parse(uni.getStorageSync("user"));
       this.pageReq.userId = this.user.userId;
-      formatAppLog("log", "at pages/history/history.vue:95", "123");
+      formatAppLog("log", "at pages/history/history.vue:105", "123");
       if (option.type === "view") {
         uni.setNavigationBarTitle({
           title: "\u6D4F\u89C8\u5386\u53F2"
@@ -7651,6 +7727,32 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      updatePostStatus(item, index) {
+        uni.showActionSheet({
+          itemList: ["\u5220\u9664\u8BE5\u5E16\u5B50"],
+          success: (res) => {
+            uni.showModal({
+              title: "\u60A8\u786E\u5B9A\u8981\u5220\u9664\u5417?",
+              success: (res2) => {
+                if (res2.confirm) {
+                  updatePost({
+                    postId: item.postId,
+                    status: "00X"
+                  }).then((res3) => {
+                    uni.showToast({
+                      title: res3.msg,
+                      icon: "success"
+                    });
+                    this.itemList = this.itemList.filter((post) => post.postId != item.postId);
+                  });
+                } else if (res2.cancel) {
+                  formatAppLog("log", "at pages/myPost/myPost.vue:95", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
+                }
+              }
+            });
+          }
+        });
+      },
       addCollect(item, index) {
         addCollect({
           userId: this.user.userId,
@@ -7660,7 +7762,7 @@ if (uni.restoreGlobal) {
         });
       },
       toDetail(item) {
-        if (typeof item.images == "string") {
+        if (!!item.images && typeof item.images == "string") {
           item.images = JSON.parse(item.images);
         }
         let info = JSON.stringify(item);
@@ -7729,11 +7831,12 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.itemList, (item, index) => {
         return vue.openBlock(), vue.createElementBlock("view", {
           class: "itemBox",
+          onLongpress: ($event) => $options.updatePostStatus(item, index),
           onClick: ($event) => $options.toDetail(item),
           key: item.postId
         }, [
@@ -7816,7 +7919,7 @@ if (uni.restoreGlobal) {
               ], 8, ["onClick"])
             ]))
           ])
-        ], 8, ["onClick"]);
+        ], 40, ["onLongpress", "onClick"]);
       }), 128)),
       this.isLoading ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 0,
@@ -7928,7 +8031,7 @@ if (uni.restoreGlobal) {
       ], 4)
     ]);
   }
-  const __easycom_1$1 = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-637fd36b"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-section/components/uni-section/uni-section.vue"]]);
+  const __easycom_1$2 = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-637fd36b"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-section/components/uni-section/uni-section.vue"]]);
   const _sfc_main$d = {
     data() {
       return {
@@ -8024,7 +8127,7 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$1);
+    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$2);
     return vue.openBlock(), vue.createBlock(_component_uni_section, {
       class: "mb-10",
       title: "\u8BF7\u9009\u62E9\u7528\u6237",
@@ -8135,7 +8238,7 @@ if (uni.restoreGlobal) {
       });
       let user = JSON.parse(uni.getStorageSync("user") || "{}");
       getMyRank({ userId: user.userId, orderType: "Current" }).then((res) => {
-        this.user = res.data;
+        this.user = Object.assign(res.data, user);
         uni.setStorageSync("user", JSON.stringify(this.user));
       });
     },
@@ -8157,7 +8260,7 @@ if (uni.restoreGlobal) {
         });
         let user = JSON.parse(uni.getStorageSync("user") || "{}");
         getMyRank({ userId: user.userId, orderType: this.activeFlag }).then((res) => {
-          this.user = res.data;
+          this.user = Object.assign(res.data, this.user);
           uni.setStorageSync("user", JSON.stringify(this.user));
         });
       }
@@ -8344,11 +8447,14 @@ if (uni.restoreGlobal) {
       },
       search(res) {
         this.isInput = false;
+        res.value = res.value.trim();
         if (!this.searchContent) {
           this.searchContent = res.value;
         }
-        this.historyList = this.historyList.filter((item) => item !== res.value);
-        this.historyList.unshift(res.value);
+        if (!!res.value) {
+          this.historyList = this.historyList.filter((item) => item !== res.value);
+          this.historyList.unshift(res.value);
+        }
         if (this.historyList.length > 15) {
           this.historyList.splice(15);
         }
@@ -8426,8 +8532,8 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_search_bar = resolveEasycom(vue.resolveDynamicComponent("uni-search-bar"), __easycom_0$2);
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
-    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$1);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
+    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$2);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "searchBox" }, [
         vue.createVNode(_component_uni_search_bar, {
@@ -8667,8 +8773,8 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
-    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$1);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
+    const _component_uni_section = resolveEasycom(vue.resolveDynamicComponent("uni-section"), __easycom_1$2);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createCommentVNode(" \u9996\u90E8 "),
       vue.createElementVNode("view", { class: "top" }, [
@@ -8823,6 +8929,35 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      updateDynamicStatus(item, index) {
+        if (item.userId != this.user.userId) {
+          return;
+        }
+        uni.showActionSheet({
+          itemList: ["\u5220\u9664\u8BE5\u5E16\u5B50"],
+          success: (res) => {
+            uni.showModal({
+              title: "\u60A8\u786E\u5B9A\u8981\u5220\u9664\u5417?",
+              success: (res2) => {
+                if (res2.confirm) {
+                  updatePost({
+                    postId: item.postId,
+                    status: "00X"
+                  }).then((res3) => {
+                    uni.showToast({
+                      title: res3.msg,
+                      icon: "success"
+                    });
+                    this.itemList = this.itemList.filter((post) => post.postId != item.postId);
+                  });
+                } else if (res2.cancel) {
+                  formatAppLog("log", "at pages/dynamic/dynamic.vue:83", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
+                }
+              }
+            });
+          }
+        });
+      },
       toDetail(item) {
         let info = JSON.stringify(item);
         uni.navigateTo({
@@ -8838,7 +8973,7 @@ if (uni.restoreGlobal) {
           item.images = JSON.parse(item.images || "[]");
           return item;
         });
-        formatAppLog("log", "at pages/dynamic/dynamic.vue:76", records);
+        formatAppLog("log", "at pages/dynamic/dynamic.vue:105", records);
         this.itemList = records;
         if (res.data.records.length < 10) {
           this.hasMore = false;
@@ -8858,7 +8993,7 @@ if (uni.restoreGlobal) {
           item.images = JSON.parse(item.images || "[]");
           return item;
         });
-        formatAppLog("log", "at pages/dynamic/dynamic.vue:97", records);
+        formatAppLog("log", "at pages/dynamic/dynamic.vue:126", records);
         this.itemList = records;
         if (res.data.records.length < 10) {
           this.hasMore = false;
@@ -8891,11 +9026,12 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0$3);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(this.itemList, (item, index) => {
         return vue.openBlock(), vue.createElementBlock("view", {
           class: "itemBox",
+          onLongpress: ($event) => $options.updateDynamicStatus(item, index),
           onClick: ($event) => $options.toDetail(item),
           key: item.postId
         }, [
@@ -8931,7 +9067,7 @@ if (uni.restoreGlobal) {
               vue.createElementVNode("text", null, vue.toDisplayString(item.views), 1)
             ])
           ])
-        ], 8, ["onClick"]);
+        ], 40, ["onLongpress", "onClick"]);
       }), 128)),
       !this.itemList || this.itemList.length <= 0 ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 0,
@@ -9271,7 +9407,7 @@ if (uni.restoreGlobal) {
       ])
     ], 2);
   }
-  const __easycom_1 = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__scopeId", "data-v-462874dd"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue"]]);
+  const __easycom_1$1 = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__scopeId", "data-v-462874dd"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue"]]);
   var pattern = {
     email: /^\S+?@\S+?\.\S+?$/,
     idcard: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
@@ -10083,7 +10219,7 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const __easycom_2$1 = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__scopeId", "data-v-9a1e3c32"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-forms/components/uni-forms/uni-forms.vue"]]);
+  const __easycom_2 = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__scopeId", "data-v-9a1e3c32"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-forms/components/uni-forms/uni-forms.vue"]]);
   const _sfc_main$6 = {
     data() {
       return {
@@ -10175,8 +10311,8 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_easyinput = resolveEasycom(vue.resolveDynamicComponent("uni-easyinput"), __easycom_0);
-    const _component_uni_forms_item = resolveEasycom(vue.resolveDynamicComponent("uni-forms-item"), __easycom_1);
-    const _component_uni_forms = resolveEasycom(vue.resolveDynamicComponent("uni-forms"), __easycom_2$1);
+    const _component_uni_forms_item = resolveEasycom(vue.resolveDynamicComponent("uni-forms-item"), __easycom_1$1);
+    const _component_uni_forms = resolveEasycom(vue.resolveDynamicComponent("uni-forms"), __easycom_2);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "img" }, [
         vue.createElementVNode("image", {
@@ -10276,7 +10412,7 @@ if (uni.restoreGlobal) {
               {
                 minLength: 5,
                 maxLength: 15,
-                errorMessage: "\u5BC6\u7801\u957F\u5EA6\u8981\u5728~15\u4F4D"
+                errorMessage: "\u5BC6\u7801\u957F\u5EA6\u8981\u57286~15\u4F4D"
               }
             ]
           },
@@ -10291,7 +10427,7 @@ if (uni.restoreGlobal) {
                   formatAppLog("log", "at pages/register/register.vue:80", value);
                   formatAppLog("log", "at pages/register/register.vue:81", data);
                   if (value != data.password) {
-                    callback("\u5BC6\u7801\u4E0E\u539F\u5BC6\u7801\u4E0D\u4E00\u81F4");
+                    callback("\u5BC6\u7801\u4E0E\u786E\u8BA4\u5BC6\u7801\u4E0D\u4E00\u81F4");
                   }
                   return true;
                 }
@@ -10377,8 +10513,8 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_easyinput = resolveEasycom(vue.resolveDynamicComponent("uni-easyinput"), __easycom_0);
-    const _component_uni_forms_item = resolveEasycom(vue.resolveDynamicComponent("uni-forms-item"), __easycom_1);
-    const _component_uni_forms = resolveEasycom(vue.resolveDynamicComponent("uni-forms"), __easycom_2$1);
+    const _component_uni_forms_item = resolveEasycom(vue.resolveDynamicComponent("uni-forms-item"), __easycom_1$1);
+    const _component_uni_forms = resolveEasycom(vue.resolveDynamicComponent("uni-forms"), __easycom_2);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createVNode(_component_uni_forms, {
         ref: "form",
@@ -10472,6 +10608,9 @@ if (uni.restoreGlobal) {
   function qryMessagePage(data) {
     return request("/message/qryMessagePage", "POST", data);
   }
+  function deleteMsg(msgId) {
+    return request("/message/deleteMsg/" + msgId, "GET");
+  }
   const _sfc_main$4 = {
     data() {
       return {
@@ -10491,8 +10630,26 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      deleteMessage(item) {
+        uni.showModal({
+          title: "\u60A8\u786E\u5B9A\u8981\u5220\u9664\u5417?",
+          success: (res) => {
+            if (res.confirm) {
+              deleteMsg(item.messageId).then((res2) => {
+                uni.showToast({
+                  title: res2.msg,
+                  icon: "success"
+                });
+                this.msgList = this.msgList.filter((msg) => msg.messageId != item.messageId);
+              });
+            } else if (res.cancel) {
+              formatAppLog("log", "at pages/msgDetail/msgDetail.vue:61", "\u7528\u6237\u70B9\u51FB\u53D6\u6D88");
+            }
+          }
+        });
+      },
       refresh() {
-        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:49", this.refreshFlag);
+        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:67", this.refreshFlag);
         this.refreshFlag = true;
         this.pageReq.pageNum++;
         qryMessagePage(this.pageReq).then((res) => {
@@ -10506,7 +10663,7 @@ if (uni.restoreGlobal) {
         });
       },
       toUpper() {
-        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:63", "\u5230\u9876\u90E8\u4E86");
+        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:81", "\u5230\u9876\u90E8\u4E86");
       },
       sendMsg() {
         if (this.content.trim() === "") {
@@ -10523,7 +10680,7 @@ if (uni.restoreGlobal) {
           userId: this.msgUser.userId + ""
         }), (res) => {
           let data = JSON.parse(res.data);
-          formatAppLog("log", "at pages/msgDetail/msgDetail.vue:80", "\u63A5\u6536\u6D88\u606F\uFF1A", data);
+          formatAppLog("log", "at pages/msgDetail/msgDetail.vue:98", "\u63A5\u6536\u6D88\u606F\uFF1A", data);
           if (!data.messageId) {
             return;
           }
@@ -10535,16 +10692,16 @@ if (uni.restoreGlobal) {
       this.user = JSON.parse(uni.getStorageSync("user"));
       this.msgUser = JSON.parse(option.user);
       if (!this.$websocket || this.$websocket && !this.$websocket.is_open_socket) {
-        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:94", "\u8FDE\u63A5\u524D\u72B6\u6001\uFF1A", this.$websocket);
+        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:112", "\u8FDE\u63A5\u524D\u72B6\u6001\uFF1A", this.$websocket);
         this.$setWebsocket(this.user.userId);
-        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:96", "\u8FDE\u63A5\u540E\u72B6\u6001\uFF1A", this.$websocket);
+        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:114", "\u8FDE\u63A5\u540E\u72B6\u6001\uFF1A", this.$websocket);
       }
       uni.setNavigationBarTitle({
         title: this.msgUser.nickname
       });
       this.$websocket.getMessage((res) => {
         let data = JSON.parse(res.data);
-        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:105", "\u63A5\u6536\u6D88\u606F\uFF1A", data);
+        formatAppLog("log", "at pages/msgDetail/msgDetail.vue:123", "\u63A5\u6536\u6D88\u606F\uFF1A", data);
         if (!data.messageId) {
           return;
         }
@@ -10557,7 +10714,7 @@ if (uni.restoreGlobal) {
           this.msgList.unshift(msg);
         }
       });
-      formatAppLog("log", "at pages/msgDetail/msgDetail.vue:118", "123");
+      formatAppLog("log", "at pages/msgDetail/msgDetail.vue:136", "123");
     }
   };
   function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
@@ -10589,7 +10746,8 @@ if (uni.restoreGlobal) {
                 }, vue.toDisplayString(item.content), 1)
               ])) : (vue.openBlock(), vue.createElementBlock("view", {
                 key: 1,
-                class: "right"
+                class: "right",
+                onLongpress: ($event) => $options.deleteMessage(item)
               }, [
                 vue.createElementVNode("view", {
                   style: { "background-color": "aliceblue" },
@@ -10599,7 +10757,7 @@ if (uni.restoreGlobal) {
                   class: "avatar",
                   src: this.user.avatar
                 }, null, 8, ["src"])
-              ]))
+              ], 40, ["onLongpress"]))
             ]);
           }), 256))
         ])
@@ -10623,300 +10781,137 @@ if (uni.restoreGlobal) {
   }
   const PagesMsgDetailMsgDetail = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/pages/msgDetail/msgDetail.vue"]]);
   const _sfc_main$3 = {
-    name: "uni-stat-select",
-    mixins: [Es.mixinDatacom || {}],
-    props: {
-      localdata: {
-        type: Array,
-        default() {
-          return [];
-        }
-      },
-      value: {
-        type: [String, Number],
-        default: ""
-      },
-      modelValue: {
-        type: [String, Number],
-        default: ""
-      },
-      label: {
-        type: String,
-        default: ""
-      },
-      placeholder: {
-        type: String,
-        default: "\u8BF7\u9009\u62E9"
-      },
-      emptyTips: {
-        type: String,
-        default: "\u65E0\u9009\u9879"
-      },
-      clear: {
-        type: Boolean,
-        default: true
-      },
-      defItem: {
-        type: Number,
-        default: 0
-      },
-      disabled: {
-        type: Boolean,
-        default: false
-      },
-      format: {
-        type: String,
-        default: ""
-      }
-    },
     data() {
       return {
-        showSelector: false,
-        current: "",
-        mixinDatacomResData: [],
-        apps: [],
-        channels: [],
-        cacheKey: "uni-data-select-lastSelectedValue"
+        user: {},
+        pageReq: {
+          pageSize: 10,
+          pageNum: 1,
+          positiveUserId: 0
+        },
+        itemList: [],
+        isLoading: false,
+        hasMore: true
       };
     },
-    created() {
-      this.debounceGet = this.debounce(() => {
-        this.query();
-      }, 300);
-      if (this.collection && !this.localdata.length) {
-        this.debounceGet();
-      }
-    },
-    computed: {
-      typePlaceholder() {
-        const text = {
-          "opendb-stat-app-versions": "\u7248\u672C",
-          "opendb-app-channels": "\u6E20\u9053",
-          "opendb-app-list": "\u5E94\u7528"
-        };
-        const common = this.placeholder;
-        const placeholder = text[this.collection];
-        return placeholder ? common + placeholder : common;
-      },
-      valueCom() {
-        return this.modelValue;
-      }
-    },
-    watch: {
-      localdata: {
-        immediate: true,
-        handler(val, old) {
-          if (Array.isArray(val) && old !== val) {
-            this.mixinDatacomResData = val;
-          }
+    methods: {},
+    onLoad() {
+      this.user = JSON.parse(uni.getStorageSync("user"));
+      this.pageReq.positiveUserId = this.user.userId;
+      qryMyWarning(this.pageReq).then((res) => {
+        this.itemList = res.data.records;
+        if (res.data.records.length < 10) {
+          this.hasMore = false;
         }
-      },
-      valueCom(val, old) {
-        this.initDefVal();
-      },
-      mixinDatacomResData: {
-        immediate: true,
-        handler(val) {
-          if (val.length) {
-            this.initDefVal();
-          }
-        }
-      }
+      });
     },
-    methods: {
-      debounce(fn2, time = 100) {
-        let timer = null;
-        return function(...args) {
-          if (timer)
-            clearTimeout(timer);
-          timer = setTimeout(() => {
-            fn2.apply(this, args);
-          }, time);
-        };
-      },
-      query() {
-        this.mixinDatacomEasyGet();
-      },
-      onMixinDatacomPropsChange() {
-        if (this.collection) {
-          this.debounceGet();
-        }
-      },
-      initDefVal() {
-        let defValue = "";
-        if ((this.valueCom || this.valueCom === 0) && !this.isDisabled(this.valueCom)) {
-          defValue = this.valueCom;
-        } else {
-          let strogeValue;
-          if (this.collection) {
-            strogeValue = this.getCache();
-          }
-          if (strogeValue || strogeValue === 0) {
-            defValue = strogeValue;
+    onReachBottom() {
+      if (this.hasMore) {
+        this.pageReq.pageNum++;
+        this.isLoading = true;
+        qryMyWarning(this.pageReq).then((res) => {
+          if (res.data.records.length <= 0) {
+            this.hasMore = false;
           } else {
-            let defItem = "";
-            if (this.defItem > 0 && this.defItem <= this.mixinDatacomResData.length) {
-              defItem = this.mixinDatacomResData[this.defItem - 1].value;
-            }
-            defValue = defItem;
+            this.itemList.push(...res.data.records);
           }
-          if (defValue || defValue === 0) {
-            this.emit(defValue);
-          }
-        }
-        const def = this.mixinDatacomResData.find((item) => item.value === defValue);
-        this.current = def ? this.formatItemName(def) : "";
-      },
-      isDisabled(value) {
-        let isDisabled = false;
-        this.mixinDatacomResData.forEach((item) => {
-          if (item.value === value) {
-            isDisabled = item.disable;
-          }
+        }).catch((err) => {
+          this.pageReq.pageNum--;
+        }).finally(() => {
+          this.isLoading = false;
         });
-        return isDisabled;
-      },
-      clearVal() {
-        this.emit("");
-        if (this.collection) {
-          this.removeCache();
-        }
-      },
-      change(item) {
-        if (!item.disable) {
-          this.showSelector = false;
-          this.current = this.formatItemName(item);
-          this.emit(item.value);
-        }
-      },
-      emit(val) {
-        this.$emit("change", val);
-        this.$emit("input", val);
-        this.$emit("update:modelValue", val);
-        if (this.collection) {
-          this.setCache(val);
-        }
-      },
-      toggleSelector() {
-        if (this.disabled) {
-          return;
-        }
-        this.showSelector = !this.showSelector;
-      },
-      formatItemName(item) {
-        let {
-          text,
-          value,
-          channel_code
-        } = item;
-        channel_code = channel_code ? `(${channel_code})` : "";
-        if (this.format) {
-          let str = "";
-          str = this.format;
-          for (let key in item) {
-            str = str.replace(new RegExp(`{${key}}`, "g"), item[key]);
-          }
-          return str;
-        } else {
-          return this.collection.indexOf("app-list") > 0 ? `${text}(${value})` : text ? text : `\u672A\u547D\u540D${channel_code}`;
-        }
-      },
-      getLoadData() {
-        return this.mixinDatacomResData;
-      },
-      getCurrentCacheKey() {
-        return this.collection;
-      },
-      getCache(name = this.getCurrentCacheKey()) {
-        let cacheData = uni.getStorageSync(this.cacheKey) || {};
-        return cacheData[name];
-      },
-      setCache(value, name = this.getCurrentCacheKey()) {
-        let cacheData = uni.getStorageSync(this.cacheKey) || {};
-        cacheData[name] = value;
-        uni.setStorageSync(this.cacheKey, cacheData);
-      },
-      removeCache(name = this.getCurrentCacheKey()) {
-        let cacheData = uni.getStorageSync(this.cacheKey) || {};
-        delete cacheData[name];
-        uni.setStorageSync(this.cacheKey, cacheData);
       }
     }
   };
   function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
-    return vue.openBlock(), vue.createElementBlock("view", { class: "uni-stat__select" }, [
-      $props.label ? (vue.openBlock(), vue.createElementBlock("span", {
-        key: 0,
-        class: "uni-label-text hide-on-phone"
-      }, vue.toDisplayString($props.label + "\uFF1A"), 1)) : vue.createCommentVNode("v-if", true),
-      vue.createElementVNode("view", {
-        class: vue.normalizeClass(["uni-stat-box", { "uni-stat__actived": $data.current }])
-      }, [
-        vue.createElementVNode("view", {
-          class: vue.normalizeClass(["uni-select", { "uni-select--disabled": $props.disabled }])
+    return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
+      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.itemList, (item, index) => {
+        return vue.openBlock(), vue.createElementBlock("view", {
+          class: "itemBox",
+          key: item.postId
         }, [
-          vue.createElementVNode("view", {
-            class: "uni-select__input-box",
-            onClick: _cache[0] || (_cache[0] = (...args) => $options.toggleSelector && $options.toggleSelector(...args))
-          }, [
-            $data.current ? (vue.openBlock(), vue.createElementBlock("view", {
-              key: 0,
-              class: "uni-select__input-text"
-            }, vue.toDisplayString($data.current), 1)) : (vue.openBlock(), vue.createElementBlock("view", {
-              key: 1,
-              class: "uni-select__input-text uni-select__input-placeholder"
-            }, vue.toDisplayString($options.typePlaceholder), 1)),
-            $data.current && $props.clear && !$props.disabled ? (vue.openBlock(), vue.createBlock(_component_uni_icons, {
-              key: 2,
-              type: "clear",
-              color: "#c0c4cc",
-              size: "24",
-              onClick: $options.clearVal
-            }, null, 8, ["onClick"])) : (vue.openBlock(), vue.createBlock(_component_uni_icons, {
-              key: 3,
-              type: $data.showSelector ? "top" : "bottom",
-              size: "14",
-              color: "#999"
-            }, null, 8, ["type"]))
-          ]),
-          $data.showSelector ? (vue.openBlock(), vue.createElementBlock("view", {
-            key: 0,
-            class: "uni-select--mask",
-            onClick: _cache[1] || (_cache[1] = (...args) => $options.toggleSelector && $options.toggleSelector(...args))
-          })) : vue.createCommentVNode("v-if", true),
-          $data.showSelector ? (vue.openBlock(), vue.createElementBlock("view", {
-            key: 1,
-            class: "uni-select__selector"
-          }, [
-            vue.createElementVNode("view", { class: "uni-popper__arrow" }),
-            vue.createElementVNode("scroll-view", {
-              "scroll-y": "true",
-              class: "uni-select__selector-scroll"
-            }, [
-              $data.mixinDatacomResData.length === 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+          vue.createElementVNode("view", { class: "topBox" }, [
+            vue.createElementVNode("view", { class: "left" }, [
+              vue.createElementVNode("view", { class: "user" }, [
+                vue.createElementVNode("image", {
+                  class: "avatar",
+                  src: item.passiveAvatar
+                }, null, 8, ["src"]),
+                vue.createElementVNode("view", { class: "info" }, [
+                  vue.createElementVNode("view", { class: "nickname" }, vue.toDisplayString(item.passiveNickname), 1),
+                  vue.createElementVNode("view", { click: "type" })
+                ])
+              ]),
+              vue.createElementVNode("view", { class: "type" }, [
+                vue.createElementVNode("view", { style: { "font-size": "13px", "margin-right": "5px" } }, "\u4E3E\u62A5\u7C7B\u578B:"),
+                vue.createElementVNode("view", { class: "content" }, [
+                  item.type === "0" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, "\u8BC4\u8BBA")) : vue.createCommentVNode("v-if", true),
+                  item.type === "1" ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, "\u5E16\u5B50")) : vue.createCommentVNode("v-if", true),
+                  item.type === "3" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, "\u5E16\u5B50\u7533\u8BC9")) : vue.createCommentVNode("v-if", true)
+                ])
+              ])
+            ]),
+            vue.createElementVNode("view", { class: "right" }, [
+              item.status === "00D" ? (vue.openBlock(), vue.createElementBlock("view", {
                 key: 0,
-                class: "uni-select__selector-empty"
+                class: "appealSuccess"
               }, [
-                vue.createElementVNode("text", null, vue.toDisplayString($props.emptyTips), 1)
-              ])) : (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList($data.mixinDatacomResData, (item, index) => {
-                return vue.openBlock(), vue.createElementBlock("view", {
-                  class: "uni-select__selector-item",
-                  key: index,
-                  onClick: ($event) => $options.change(item)
-                }, [
-                  vue.createElementVNode("text", {
-                    class: vue.normalizeClass({ "uni-select__selector__disabled": item.disable })
-                  }, vue.toDisplayString($options.formatItemName(item)), 3)
-                ], 8, ["onClick"]);
-              }), 128))
+                vue.createTextVNode("\u5DF2\u83B7\u79EF\u5206:"),
+                vue.createElementVNode("view", null, vue.toDisplayString(item.scores), 1)
+              ])) : item.status === "00E" ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 1,
+                class: "appealFail"
+              }, "\u7533\u8BC9\u5931\u8D25!\u672A\u83B7\u5F97\u79EF\u5206")) : item.status === "00B" ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 2,
+                class: "reportSuccess"
+              }, "\u4E3E\u62A5\u6210\u529F!")) : item.status === "00C" ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 3,
+                class: "reportFail"
+              }, "\u4E3E\u62A5\u5931\u8D25!")) : item.status === "00A" ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 4,
+                class: "unhandle"
+              }, "\u7B49\u5F85\u5904\u7406\u4E2D...")) : item.status === "00X" ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 5,
+                class: "invalid"
+              }, "\u4E3E\u62A5\u5931\u8D25!")) : vue.createCommentVNode("v-if", true)
             ])
-          ])) : vue.createCommentVNode("v-if", true)
-        ], 2)
-      ], 2)
+          ]),
+          vue.createElementVNode("view", { class: "bottomBox" }, [
+            vue.createElementVNode("view", { class: "left" }, [
+              vue.createElementVNode("view", { class: "tip" }, "\u4E3E\u62A5\u65F6\u95F4\uFF1A"),
+              vue.createElementVNode("view", { class: "time" }, vue.toDisplayString(item.createDate.slice(5)), 1)
+            ]),
+            !!item.updateDate ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              class: "right"
+            }, [
+              vue.createElementVNode("view", { class: "tip" }, "\u5904\u7406\u65F6\u95F4\uFF1A"),
+              vue.createElementVNode("view", { class: "time" }, vue.toDisplayString(item.updateDate.slice(5)), 1)
+            ])) : (vue.openBlock(), vue.createElementBlock("view", {
+              key: 1,
+              class: "right"
+            }, "\u6682\u672A\u5904\u7406"))
+          ])
+        ]);
+      }), 128)),
+      this.isLoading ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        class: "bottom"
+      }, [
+        vue.createElementVNode("image", {
+          class: "loading",
+          src: "/static/images/rank/loading.png"
+        })
+      ])) : vue.createCommentVNode("v-if", true),
+      !this.isLoading && !this.hasMore ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 1,
+        class: "bottom"
+      }, [
+        vue.createElementVNode("view", { style: { "color": "#b2a796" } }, "\u6CA1\u6709\u66F4\u591A\u8BB0\u5F55\u4E86~~")
+      ])) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const __easycom_2 = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-ddf9e0a2"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-data-select/components/uni-data-select/uni-data-select.vue"]]);
+  const PagesWarningWarning = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/pages/warning/warning.vue"]]);
   const _sfc_main$2 = {
     name: "UniNumberBox",
     emits: ["change", "input", "update:modelValue", "blur", "focus"],
@@ -11070,7 +11065,7 @@ if (uni.restoreGlobal) {
       ], 4)
     ]);
   }
-  const __easycom_3 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-7ae2ee72"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-number-box/components/uni-number-box/uni-number-box.vue"]]);
+  const __easycom_1 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-7ae2ee72"], ["__file", "D:/Resources/font-workspace/gradutation_project/easy_help_front/uni_modules/uni-number-box/components/uni-number-box/uni-number-box.vue"]]);
   const _sfc_main$1 = {
     data() {
       return {
@@ -11164,9 +11159,7 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_file_picker = resolveEasycom(vue.resolveDynamicComponent("uni-file-picker"), __easycom_0$1);
-    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_1$2);
-    const _component_uni_data_select = resolveEasycom(vue.resolveDynamicComponent("uni-data-select"), __easycom_2);
-    const _component_uni_number_box = resolveEasycom(vue.resolveDynamicComponent("uni-number-box"), __easycom_3);
+    const _component_uni_number_box = resolveEasycom(vue.resolveDynamicComponent("uni-number-box"), __easycom_1);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createCommentVNode(' <uni-notice-bar scrollable single text="\u731C\u731C\u6211\u662F\u8C01?"></uni-notice-bar> '),
       vue.createElementVNode("view", { class: "contentContainer" }, [
@@ -11198,22 +11191,7 @@ if (uni.restoreGlobal) {
         key: 0,
         class: "tags"
       }, [
-        vue.createElementVNode("view", { class: "left" }, [
-          vue.createVNode(_component_uni_icons, {
-            type: "list",
-            size: "30"
-          }),
-          vue.createElementVNode("text", { class: "type" }, "\u5206\u7C7B")
-        ]),
-        vue.createElementVNode("view", { class: "right" }, [
-          vue.createVNode(_component_uni_data_select, {
-            modelValue: $data.selectedTag,
-            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.selectedTag = $event),
-            localdata: $data.range,
-            clear: false,
-            onChange: $options.change
-          }, null, 8, ["modelValue", "localdata", "onChange"])
-        ])
+        vue.createCommentVNode(' <view class="left">\r\n        <uni-icons type="list" size="30"></uni-icons>\r\n        <text class="type">\u5206\u7C7B</text>\r\n      </view>\r\n      <view class="right">\r\n        <uni-data-select\r\n          v-model="selectedTag"\r\n          :localdata="range"\r\n          :clear="false"\r\n          @change="change"\r\n        ></uni-data-select>\r\n      </view> ')
       ])) : vue.createCommentVNode("v-if", true),
       this.type === "0" ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 1,
@@ -11225,7 +11203,7 @@ if (uni.restoreGlobal) {
         ]),
         vue.createVNode(_component_uni_number_box, {
           modelValue: this.defaultNum,
-          "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => this.defaultNum = $event),
+          "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => this.defaultNum = $event),
           min: 0,
           max: this.max,
           onChange: $options.changeScore
@@ -11234,7 +11212,7 @@ if (uni.restoreGlobal) {
       this.type === "0" ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 2,
         class: "tip",
-        onClick: _cache[4] || (_cache[4] = () => {
+        onClick: _cache[3] || (_cache[3] = () => {
         })
       }, "\u6E29\u99A8\u63D0\u793A\uFF1A\u60A8\u5F53\u524D\u62E5\u6709" + vue.toDisplayString(this.max) + "\u79EF\u5206", 1)) : vue.createCommentVNode("v-if", true)
     ]);
@@ -11255,6 +11233,7 @@ if (uni.restoreGlobal) {
   __definePage("pages/login/login", PagesLoginLogin);
   __definePage("pages/register/register", PagesRegisterRegister);
   __definePage("pages/msgDetail/msgDetail", PagesMsgDetailMsgDetail);
+  __definePage("pages/warning/warning", PagesWarningWarning);
   __definePage("pages/post/post", PagesPostPost);
   const _sfc_main = {
     __name: "App",
@@ -12846,7 +12825,7 @@ This will fail in production if not fixed.`);
     app.config.globalProperties.$websocket = "";
     app.config.globalProperties.$setWebsocket = function(userId) {
       formatAppLog("log", "at main.js:23", "\u8BBE\u7F6E\u8BBE\u7F6E");
-      app.config.globalProperties.$websocket = new websocketUtil("ws://192.168.43.228:8888/websocket/" + userId, 5e3);
+      app.config.globalProperties.$websocket = new websocketUtil("ws://110.41.146.56:8888/websocket/" + userId, 5e3);
     };
     return {
       app,

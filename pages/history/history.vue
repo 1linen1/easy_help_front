@@ -62,14 +62,24 @@
         	itemList: ['申诉'],
         	success: (res) => {
         	  uni.showModal({
-        	    title: "您确定举报该评论吗?",
+        	    title: "您确定申诉吗?",
         	    success: (res) => {
         	      if (res.confirm) {
         	        addWarning({
                     positiveUserId: this.user.userId,
                     passiveUserId: item.userId,
-                    commentPostId: item.commentId,
+                    commentPostId: item.postId,
                     type: "3" // 0评论，1帖子，2用户，3帖子申诉
+                  }).then(res => {
+                    uni.showToast({
+                      title: "请等待审核!",
+                      icon: 'success'
+                    })
+                  }).catch(err => {
+                    uni.showToast({
+                      title: "请勿重复申诉!",
+                      icon: 'none'
+                    })
                   })
         	      } else if (res.cancel) {
         	        console.log('用户点击取消2');

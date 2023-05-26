@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="itemBox" v-for="(item, index) in userList" :key="item.userId">
-      <view class="left">
+      <view class="left" @click="toDetail(item.userId)">
         <image class="avatar" :src="item.avatar"></image>
         <view class="box">
           <view class="nickname">{{item.nickname}}</view>
@@ -36,6 +36,12 @@
       }
     },
     methods: {
+      toDetail(userId) {
+        console.log("123")
+        uni.navigateTo({
+          url: "/pages/userHome/userHome?userId=" + userId
+        })
+      },
       toFollow(flag, userId, index) {
         if (flag) {
           addFollow({

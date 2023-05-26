@@ -21,7 +21,8 @@ export function createApp() {
   app.config.globalProperties.$websocket = '' // 定义全局的websocket
   app.config.globalProperties.$setWebsocket = function (userId) {
     console.log("设置设置")
-    app.config.globalProperties.$websocket = new ws("ws://192.168.43.228:8888/websocket/" + userId, 5000)
+    // app.config.globalProperties.$websocket = new ws("ws://127.0.0.1:8888/websocket/" + userId, 5000)
+    app.config.globalProperties.$websocket = new ws("ws://110.41.146.56:8888/websocket/" + userId, 5000)
   }
   return {
     app,

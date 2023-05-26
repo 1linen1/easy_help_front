@@ -20,7 +20,7 @@
         </view>
     </view>
     <view class="tags" v-if="this.type === '0'">
-      <view class="left">
+      <!-- <view class="left">
         <uni-icons type="list" size="30"></uni-icons>
         <text class="type">分类</text>
       </view>
@@ -31,7 +31,7 @@
           :clear="false"
           @change="change"
         ></uni-data-select>
-      </view>
+      </view> -->
     </view>
     <view class="bottom" v-if="this.type === '0'">
       <view class="iconBox">

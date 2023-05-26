@@ -21,7 +21,7 @@
     <view class="postContainer">
       <view class="left">
         <view class="itemBox" @click="toDetail(item)" v-for="item in this.leftPostList">
-          <view class="imgBox" v-if="item.images"><image class="img" mode="widthFix" :src="item.images ? item.images[0].url : ''"></image></view>
+          <view class="imgBox" v-if="item.images && item.images.length > 0"><image class="img" mode="widthFix" :src="item.images ? item.images[0].url : ''"></image></view>
           <text class="profile">{{item.content}}</text>
           <view class="bottom">
             <view class="person">
@@ -38,7 +38,7 @@
       
       <view class="right">
         <view class="itemBox" @click="toDetail(item)" v-for="item in this.rightPostList">
-          <view class="imgBox" v-if="item.images"><image class="img" mode="widthFix" :src="item.images ? item.images[0].url : ''"></image></view>
+          <view class="imgBox" v-if="item.images && item.images.length > 0"><image class="img" mode="widthFix" :src="item.images ? item.images[0]?.url : ''"></image></view>
           <text class="profile">{{item.content}}</text>
           <view class="bottom">
             <view class="person">
@@ -190,7 +190,18 @@
       },
     },
     onLoad() {
-      this.user = JSON.parse(uni.getStorageSync("user"))
+      let user = uni.getStorageSync("user")
+      if (!user) {
+        uni.showToast({
+          title: "请先登录!",
+          icon: 'none'
+        })
+        uni.reLaunch({
+          url: "/pages/login/login"
+        })
+        return;
+      }
+      this.user = JSON.parse(user)
       
       this.pageReq.userId = this.user.userId
       
@@ -354,6 +365,7 @@
         .typeArea {
           display: flex;
           width: 100%;
+          flex-wrap: nowrap;
           white-space: nowrap;
           overflow: auto;
           padding: 20rpx 20rpx;
@@ -370,6 +382,11 @@
               background-color: #d4feff;
               font-weight: 600;
               color: #5895e5;
+            }
+          }
+          .item:last-child {
+            .tag {
+              margin-right: 70rpx;
             }
           }
         }
@@ -421,7 +438,7 @@
               margin: 10rpx;
             }
             .name {
-              font-size: 12rpx;
+              font-size: 20rpx;
               color: #999999;
             }
           }

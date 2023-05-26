@@ -134,7 +134,7 @@
       let user = JSON.parse(uni.getStorageSync("user") || '{}')
       
       getMyRank({userId: user.userId, orderType: 'Current'}).then(res => {
-        this.user = res.data
+        this.user = Object.assign(res.data, user)
         uni.setStorageSync("user", JSON.stringify(this.user))
       })
     },
@@ -157,7 +157,7 @@
         let user = JSON.parse(uni.getStorageSync("user") || '{}')
         
         getMyRank({userId: user.userId, orderType: this.activeFlag}).then(res => {
-          this.user = res.data
+          this.user = Object.assign(res.data ,this.user)
           uni.setStorageSync("user", JSON.stringify(this.user))
         })
       }

@@ -109,11 +109,14 @@
       },
       search(res) {
         this.isInput = false
+        res.value = res.value.trim()
         if (!this.searchContent) {
           this.searchContent = res.value
         }
-        this.historyList = this.historyList.filter(item => item !== res.value)
-        this.historyList.unshift(res.value)
+        if (!!res.value) {
+          this.historyList = this.historyList.filter(item => item !== res.value)
+          this.historyList.unshift(res.value)
+        }
         if (this.historyList.length > 15) {
           this.historyList.splice(15)
         }
@@ -260,7 +263,7 @@
               margin: 10rpx;
             }
             .name {
-              font-size: 12rpx;
+              font-size: 20rpx;
               color: #999999;
             }
           }

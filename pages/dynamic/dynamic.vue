@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="itemBox" @click="toDetail(item)" v-for="(item, index) in this.itemList" :key="item.postId">
+    <view class="itemBox" @longpress="updateDynamicStatus(item, index)" @click="toDetail(item)" v-for="(item, index) in this.itemList" :key="item.postId">
       <view class="topBox">
         <view class="leftBox">
           <image class="avatar" :src="item.avatar"></image>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-  import {qryDynamicPage} from "../../api/post.js"
+  import {qryDynamicPage, updatePost} from "../../api/post.js"
   export default {
     data() {
       return {
@@ -58,6 +58,35 @@
       };
     },
     methods: {
+      updateDynamicStatus(item, index) {
+        if (item.userId != this.user.userId) {
+          return;
+        }
+        uni.showActionSheet({
+        	itemList: ['删除该帖子'],
+        	success: (res) => {
+            uni.showModal({
+              title: "您确定要删除吗?",
+              success:  (res) => {
+                if (res.confirm) {
+                  updatePost({
+                    postId: item.postId,
+                    status: '00X'
+                  }).then(res => {
+                    uni.showToast({
+                      title: res.msg,
+                      icon: 'success'
+                    })
+                    this.itemList = this.itemList.filter(post => post.postId != item.postId)
+                  })
+                } else if (res.cancel) {
+                  console.log('用户点击取消');
+                }
+              }
+            })
+        	}
+        });
+      },
       toDetail(item) {
         let info = JSON.stringify(item)
         uni.navigateTo({

@@ -30,7 +30,7 @@
       </view>
     </view>
     
-    <view class="middle">
+    <view class="middle" @longpress="reportPost">
       <textarea class="content" :value="this.info.content" disabled></textarea> 
       <view class="hr"></view>
       <view class="image">
@@ -46,7 +46,10 @@
     
     <view class="hr"></view>
     <view class="bottom">
-      <view class="title" style="color: #343434; font-weight: 700;">我要帮助</view>
+      <view class="title" style="color: #343434; font-weight: 700;display: flex;justify-content: space-between;">
+        <view class="help">我要帮助</view>
+        <view class="scores" style="color: #ccc; font-size: 15px; margin-right: 15px;">当前帖子拥有附加积分: {{this.info.scores}}</view>
+      </view>
       <view class="inputArea">
         <image class="avatar" :src="this.user.avatar"></image>
         <view class="comment">  
@@ -124,6 +127,41 @@
       }
     },
     methods: {
+      reportPost() {
+        if (this.info.userId === this.user.userId) {
+          return;
+        }
+        uni.showActionSheet({
+        	itemList: ['举报帖子'],
+        	success: (res) => {
+        	  uni.showModal({
+        	    title: "您确定举报吗?",
+        	    success: (res) => {
+        	      if (res.confirm) {
+        	        addWarning({
+                    positiveUserId: this.user.userId,
+                    passiveUserId: this.info.userId,
+                    commentPostId: this.info.postId,
+                    type: "1" // 0评论，1帖子，2用户，3帖子申诉
+                  }).then(res => {
+                    uni.showToast({
+                      title: res.msg,
+                      icon: 'success'
+                    })
+                  }).catch(err => {
+                    uni.showToast({
+                      title: "请勿重复举报!",
+                      icon: 'none'
+                    })
+                  })
+        	      } else if (res.cancel) {
+        	        console.log('用户点击取消2');
+        	      }
+        	    }
+        	  })
+        	}
+        });
+      },
       toAssignScores() {
         uni.navigateTo({
           url: "/pages/scoresAssgin/scoresAssgin?postId=" + this.info.postId + "&userId=" + this.info.userId
@@ -262,6 +300,16 @@
                       passiveUserId: item.userId,
                       commentPostId: item.commentId,
                       type: "0" // 0评论，1帖子，2用户
+                    }).then(res => {
+                      uni.showToast({
+                        title: res.msg,
+                        icon: 'success'
+                      })
+                    }).catch(err => {
+                      uni.showToast({
+                        title: "请勿重复举报!",
+                        icon: 'none'
+                      })
                     })
           	      } else if (res.cancel) {
           	        console.log('用户点击取消2');

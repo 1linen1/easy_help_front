@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="itemBox" @click="toDetail(item)" v-for="(item, index) in itemList" :key="item.postId">
+    <view class="itemBox" @longpress="updatePostStatus(item, index)" @click="toDetail(item)" v-for="(item, index) in itemList" :key="item.postId">
       <view class="topBox">
         <view class="content">{{item.content}}</view>
         <view v-if="this.type === 'myPost' && item.resolved === '00R'" class="resolveBox">
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-  import {qryPostPage, qryCollectPostPage, addCollect} from "../../api/post.js"
+  import {qryPostPage, qryCollectPostPage, addCollect, updatePost} from "../../api/post.js"
   export default {
     data() {
       return {
@@ -73,6 +73,33 @@
       }
     },
     methods: {
+      updatePostStatus(item, index) {
+        uni.showActionSheet({
+        	itemList: ['删除该帖子'],
+        	success: (res) => {
+            uni.showModal({
+              title: "您确定要删除吗?",
+              success:  (res) => {
+                if (res.confirm) {
+                  updatePost({
+                    postId: item.postId,
+                    status: '00X'
+                  }).then(res => {
+                    uni.showToast({
+                      title: res.msg,
+                      icon: 'success'
+                    })
+                    this.itemList = this.itemList.filter(post => post.postId != item.postId)
+                  })
+                } else if (res.cancel) {
+                  console.log('用户点击取消');
+                }
+              }
+            })
+        	}
+        });
+        
+      },
       addCollect(item, index) {
         addCollect({
           userId: this.user.userId,
@@ -82,7 +109,7 @@
         })
       },
       toDetail(item) {
-        if (typeof( item.images ) == 'string' ) {
+        if (!!item.images && typeof( item.images ) == 'string' ) {
           item.images = JSON.parse(item.images)
         }
         let info = JSON.stringify(item)

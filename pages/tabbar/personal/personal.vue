@@ -65,7 +65,7 @@
     
     <!-- 底部 -->
     <view class="bottom">
-      <view class="item">
+      <view class="item" @click="toWarning">
         <view class="left">
           <image class="warning" src="../../../static/images/personal/warning.png"></image>
           <view class="text">举报结果</view>
@@ -107,6 +107,11 @@
       }
     },
     methods: {
+      toWarning() {
+        uni.navigateTo({
+          url: "/pages/warning/warning"
+        })
+      },
       toDynamic() {
         uni.navigateTo({
           url: "/pages/dynamic/dynamic"
